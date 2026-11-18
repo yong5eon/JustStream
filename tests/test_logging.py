@@ -26,7 +26,7 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Pool,
 	PoolFull,
 	PoolSetup,
@@ -35,7 +35,7 @@ from DefStream.Worker import (
 	ThreadPool,
 	Worker,
 )
-from DefStream.Worker.Executor import Executor
+from JustStream.Worker.Executor import Executor
 
 
 class Example(Run, parameters={'queue': 'example'}):

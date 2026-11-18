@@ -32,8 +32,8 @@ from pika import (
 )
 from pika.exceptions import UnroutableError
 
-from DefStream.Broker import RemoteError
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker import RemoteError
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration,
 	Connection,
 	Consumer,
@@ -44,7 +44,7 @@ from DefStream.Broker.Implements.RabbitMQ import (
 	Reject,
 	Stream,
 )
-from DefStream.Broker.Implements.RabbitMQ.Serializer import (
+from JustStream.Broker.Implements.RabbitMQ.Serializer import (
 	JavaScriptObjectNotationDecoder,
 	JavaScriptObjectNotationEncoder,
 )
@@ -52,7 +52,7 @@ from tests._support import require_value
 
 
 NAMESPACE = 'Broker.RabbitMQ'
-PACKAGE = 'DefStream.Broker.Implements.RabbitMQ'
+PACKAGE = 'JustStream.Broker.Implements.RabbitMQ'
 PROJECT = Path(__file__).resolve().parents[2]
 SECRET = '비밀본문_인증정보_헤더'
 

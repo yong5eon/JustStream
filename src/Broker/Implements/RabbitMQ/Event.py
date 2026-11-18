@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Event as BaseEvent,
 	EventHandler as BaseEventHandler,
 )
-from DefStream.Broker.Event import EventErrorPolicy
+from JustStream.Broker.Event import EventErrorPolicy
 
 from abc import abstractmethod
 from logging import getLogger

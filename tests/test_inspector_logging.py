@@ -16,21 +16,21 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Inspector import Inspector
-from DefStream.Inspector.Extension import Extension
-from DefStream.Inspector.Extensions import (
+from JustStream.Inspector import Inspector
+from JustStream.Inspector.Extension import Extension
+from JustStream.Inspector.Extensions import (
 	Play,
 	Metrics,
 	Ping,
 	Specifications,
 	Status,
 )
-from DefStream.Inspector.Inspector import (
+from JustStream.Inspector.Inspector import (
 	InspectorServerHandler,
 	RequestHandler,
 	Server,
 )
-from DefStream.Inspector.Response import Response
+from JustStream.Inspector.Response import Response
 from tests._support import require_value
 
 

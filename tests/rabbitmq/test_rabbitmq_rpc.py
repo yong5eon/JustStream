@@ -19,11 +19,11 @@ from pika import (
 )
 from pika.exceptions import UnroutableError
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Callable,
 	RemoteError,
 )
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Consumer,
 	Event,
 	Exchange,
@@ -31,7 +31,7 @@ from DefStream.Broker.Implements.RabbitMQ import (
 	Reject,
 	Requeue,
 )
-from DefStream.Broker.Implements.RabbitMQ.Serializer import (
+from JustStream.Broker.Implements.RabbitMQ.Serializer import (
 	JavaScriptObjectNotationDecoder,
 	JavaScriptObjectNotationEncoder,
 )
@@ -40,7 +40,7 @@ from tests._support import call_with_invalid_input
 
 class RpcTests(TestCase):
 	@patch.object(
-		import_module('DefStream.Broker.Implements.RabbitMQ.Exchange'),
+		import_module('JustStream.Broker.Implements.RabbitMQ.Exchange'),
 		'BlockingConnection',
 	)
 	def test_queue_and_exchange_inherit_callable_and_exchange_routes_rpc(

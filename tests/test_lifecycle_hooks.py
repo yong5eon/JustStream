@@ -16,7 +16,7 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Worker import (
+from JustStream.Worker import (
 	PoolCleanup,
 	PoolSetup,
 	ProcessPool,

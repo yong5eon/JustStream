@@ -4,12 +4,12 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration,
 	Connection,
 	Subscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Run,
 	declare,
 	request,

@@ -19,7 +19,7 @@ from unittest.mock import (
 
 from redis.exceptions import ResponseError
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
 	Connection,
 	Configuration,
 	ConnectionType,
@@ -27,7 +27,7 @@ from DefStream.Broker.Implements.Redis import (
 	Event,
 	Queue,
 )
-from DefStream.Broker.Implements.Redis.Serializer import (
+from JustStream.Broker.Implements.Redis.Serializer import (
 	JavaScriptObjectNotationDecoder,
 	JavaScriptObjectNotationEncoder,
 )
@@ -73,7 +73,7 @@ class RedisLoggingTests(TestCase):
 
 	def test_connection_failure_log_omits_credentials_and_exception_text(self):
 		broker = Connection(Configuration(password='private-password'))
-		connection_module = import_module('DefStream.Broker.Implements.Redis.Connection')
+		connection_module = import_module('JustStream.Broker.Implements.Redis.Connection')
 		with patch.object(
 			connection_module,
 			'Redis',
@@ -91,7 +91,7 @@ class RedisLoggingTests(TestCase):
 		redis.return_value.close.assert_called_once()
 
 	def test_connection_logs_pool_and_cluster_modes(self):
-		connection_module = import_module('DefStream.Broker.Implements.Redis.Connection')
+		connection_module = import_module('JustStream.Broker.Implements.Redis.Connection')
 		for connection_type, client_name in (
 			(ConnectionType.Pool, 'Redis'),
 			(ConnectionType.Cluster, 'RedisCluster'),

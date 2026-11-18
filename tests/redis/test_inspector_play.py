@@ -4,7 +4,7 @@ from unittest import (
 	skipUnless,
 )
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
 	Configuration,
 	Connection,
 )

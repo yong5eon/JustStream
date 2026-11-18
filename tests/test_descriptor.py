@@ -25,7 +25,7 @@ from unittest import (
 	main,
 )
 
-from DefStream.Descriptor import (
+from JustStream.Descriptor import (
 	AllOf,
 	Array,
 	Binary,
@@ -48,15 +48,15 @@ from DefStream.Descriptor import (
 	TypeMapper,
 	Value,
 )
-from DefStream.Descriptor.DataObject import (
+from JustStream.Descriptor.DataObject import (
 	DataObjectToObject,
 	DataObjectToSchema,
 	SchemaToDataObject,
 )
-from DefStream.Descriptor.Value import (
+from JustStream.Descriptor.Value import (
 	Type,
 )
-from DefStream.Worker import Specification
+from JustStream.Worker import Specification
 
 
 @dataclass

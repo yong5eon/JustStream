@@ -9,12 +9,12 @@ from unittest import (
 )
 from uuid import uuid4
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
 	Configuration as RedisConfiguration,
 	Connection as RedisConnection,
 	Subscription as RedisSubscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Run,
 	RunComplete,
 	ThreadPool,
@@ -42,7 +42,7 @@ class RedisConnectionApiTests(TestCase):
 )
 class RedisMessageTests(TestCase):
 	def test_completion_hook_sends_to_next_task(self):
-		prefix = 'defstream-chain-' + uuid4().hex
+		prefix = 'juststream-chain-' + uuid4().hex
 		first = prefix + '-first'
 		second = prefix + '-second'
 		finished = Event()
@@ -152,7 +152,7 @@ class RedisMessageTests(TestCase):
 			client.close()
 
 	def test_declare_and_send_1000_on_borrowed_connection(self):
-		name = 'defstream-send-' + uuid4().hex
+		name = 'juststream-send-' + uuid4().hex
 		connection = RedisConnection(RedisConfiguration(port=redis_test_port()))
 		connection.connect()
 		old = Task.parameters

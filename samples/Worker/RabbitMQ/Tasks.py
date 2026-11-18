@@ -6,28 +6,28 @@ from logging import (
 	getLogger,
 )
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Reject,
 	Requeue,
 	Subscription,
 )
-from DefStream.Descriptor import (
+from JustStream.Descriptor import (
 	Integer,
 	Number,
 	Object,
 	Properties,
 )
-from DefStream.Validator import Validator
-from DefStream.Validator.Patterns import (
+from JustStream.Validator import Validator
+from JustStream.Validator.Patterns import (
 	IsInteger,
 	IsNumber,
 	IsObject,
 )
-from DefStream.Validator.Patterns.Object import (
+from JustStream.Validator.Patterns.Object import (
 	IsMappingOf,
 	IsRequiredIn,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	WorkerSetup,
 	PoolSetup,
 	Run,

@@ -75,7 +75,7 @@ class Play(Extension):
 		broker: BrokerFactory,
 		token: Optional[str] = None,
 		timeout: float = 5,
-		title: str = 'DefStream',
+		title: str = 'JustStream',
 		description: Optional[str] = None,
 	):
 		super().__init__(path)

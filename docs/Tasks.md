@@ -14,7 +14,7 @@
 | `emit(body, task=..., broker=..., retry=None, interval=1)` | 작업 목적지로 단방향 메시지 발행 | 호출자가 연결·종료 |
 | `request(body, task=..., broker=..., timeout=5, retry=None, interval=1)` | 작업 결과를 동기 RPC로 요청 | 호출자가 연결·종료; RabbitMQ만 지원 |
 
-세 함수는 `DefStream.Worker`에서 가져옵니다. 전달된 연결을 자동으로 열거나 닫지 않으며,
+세 함수는 `JustStream.Worker`에서 가져옵니다. 전달된 연결을 자동으로 열거나 닫지 않으며,
 `emit()`와 `request()`는 목적지를 자동 선언하지 않습니다.
 수신 Worker 또는 별도의 준비 단계에서 먼저 `declare()`를 호출하세요.
 하나의 연결을 같은 소유 스레드에서 여러 발행에 재사용할 수 있습니다.
@@ -59,8 +59,8 @@ RabbitMQ classic 큐에서는 작업 `parameters`의 RabbitMQ `Subscription`에
 `declare()`가 이 설정을 읽어 우선순위 큐를 준비합니다.
 
 ```python
-from DefStream.Broker.Implements.RabbitMQ import Subscription
-from DefStream.Worker import (
+from JustStream.Broker.Implements.RabbitMQ import Subscription
+from JustStream.Worker import (
   Run,
   declare,
   request,
@@ -71,7 +71,7 @@ from DefStream.Worker import (
 class Add(
   Run,
   parameters=Subscription(
-    queue='defstream.example.priority.add',
+    queue='juststream.example.priority.add',
     max_priority=5,
     priority=2,
   ),
@@ -167,7 +167,7 @@ result = request(
 
 연결의 `exchange()`·`queue()`·`stream()`·`consumer()` 지원 여부는 각각
 `GetExchange`·`GetQueue`·`GetStream`·`GetConsumer`로 `isinstance` 또는 `issubclass`
-검사할 수 있습니다. 이 계약들은 `DefStream.Broker`에서 가져옵니다.
+검사할 수 있습니다. 이 계약들은 `JustStream.Broker`에서 가져옵니다.
 
 | 메서드 | 의미 | 제한 시간 단위 |
 | --- | --- | --- |
@@ -189,7 +189,7 @@ RabbitMQ 스트림 읽기는 이터레이터가 다음 단계로 진행될 때 �
 | `ThreadPool(4)` | I/O 대기 중심 작업 | 실행 스레드 사이에 공유하는 상태 보호 |
 | `ProcessPool(4)` | CPU 연산 중심 작업 | 클래스·입력·결과·훅은 pickle 가능해야 함 |
 
-두 풀은 `DefStream.Worker`에서 가져옵니다. 크기를 생략하면 CPU 수를 사용하며,
+두 풀은 `JustStream.Worker`에서 가져옵니다. 크기를 생략하면 CPU 수를 사용하며,
 공유 풀의 용량은 제출되어 처리 중인 작업을 포함합니다. 무제한 대기열은 없습니다.
 풀이 가득 차면 Worker는 메시지를 재전달하도록 NACK합니다.
 RabbitMQ의 작업별 `Subscription.qos`는 미확인 메시지 수 제한이며 풀 크기와는 다릅니다.

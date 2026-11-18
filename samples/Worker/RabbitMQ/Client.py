@@ -7,12 +7,12 @@ from Tasks import (
 	logger,
 )
 
-from DefStream.Broker import RemoteError
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker import RemoteError
+from JustStream.Broker.Implements.RabbitMQ import (
 	Connection,
 	Configuration,
 )
-from DefStream.Worker import request
+from JustStream.Worker import request
 
 
 if __name__ == '__main__':

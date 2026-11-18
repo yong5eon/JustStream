@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Sendable,
 	Readable,
 )

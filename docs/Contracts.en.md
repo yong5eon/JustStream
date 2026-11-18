@@ -13,7 +13,7 @@ Place the following examples in the same file, in order.
 ### 1. Describe a schema with Descriptor
 
 ```python
-from DefStream.Descriptor import DumpSchema, Integer, Object, Properties, Schema
+from JustStream.Descriptor import DumpSchema, Integer, Object, Properties, Schema
 
 
 request_schema = Object(
@@ -44,9 +44,9 @@ validation rules if they must also be enforced at runtime.
 ### 2. Validate values with Validator
 
 ```python
-from DefStream.Validator import Validator
-from DefStream.Validator.Patterns import IsInteger, IsObject
-from DefStream.Validator.Patterns.Object import IsMappingOf, IsRequiredIn
+from JustStream.Validator import Validator
+from JustStream.Validator.Patterns import IsInteger, IsObject
+from JustStream.Validator.Patterns.Object import IsMappingOf, IsRequiredIn
 
 
 request_validator = Validator(
@@ -82,8 +82,8 @@ To accept numeric strings, use an explicit conversion pattern instead of
 checks that it is non-negative.
 
 ```python
-from DefStream.Validator import Validator
-from DefStream.Validator.Patterns import IsGreaterEqualTo, ToInteger
+from JustStream.Validator import Validator
+from JustStream.Validator.Patterns import IsGreaterEqualTo, ToInteger
 
 
 non_negative_integer = Validator(
@@ -107,13 +107,13 @@ validators defined above. Once registered with the Worker, inputs are validated
 before `run()`, and the return value before completion hooks.
 
 ```python
-from DefStream.Broker.Implements.RabbitMQ import Reject, Subscription
-from DefStream.Worker import Run, Specification
+from JustStream.Broker.Implements.RabbitMQ import Reject, Subscription
+from JustStream.Worker import Run, Specification
 
 
 class Add(
   Run,
-  parameters=Subscription(queue='defstream.example.validated-add'),
+  parameters=Subscription(queue='juststream.example.validated-add'),
   on_error=Reject(),
   request=Specification(
     schema=request_schema,

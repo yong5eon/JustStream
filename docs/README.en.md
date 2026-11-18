@@ -1,14 +1,14 @@
-# DefStream Detailed Guide
+# JustStream Detailed Guide
 
 [한국어](./README.md)
 
-## What is DefStream?
+## What is JustStream?
 
-DefStream is a synchronous task-processing library that runs Python methods for work delivered through a message broker. Instead of coroutine-based `async def` and `await`, define a task as a `Run` class and register it with a `Worker`. The Worker receives messages from the broker and executes tasks in a worker pool. Successful tasks are acknowledged (ACKed); failed tasks are redelivered or rejected according to the policy configured for the task.
+JustStream is a synchronous task-processing library that runs Python methods for work delivered through a message broker. Instead of coroutine-based `async def` and `await`, define a task as a `Run` class and register it with a `Worker`. The Worker receives messages from the broker and executes tasks in a worker pool. Successful tasks are acknowledged (ACKed); failed tasks are redelivered or rejected according to the policy configured for the task.
 
 Broker connections are provided through adapters, with support for RabbitMQ and Redis Streams. RabbitMQ supports queues, exchanges, and synchronous RPC; Redis Streams supports stream and consumer-group processing. Capabilities and settlement behavior differ by broker, so consult the corresponding broker guide for details.
 
-In addition to task execution, DefStream provides thread and process pools for concurrency, per-task request and response validation, lifecycle hooks, and an Inspector for health checks and operations. This guide covers setup, task processing, broker-specific usage, and operational considerations. For the project overview and a minimal runnable example, see the [root README](../README.en.md).
+In addition to task execution, JustStream provides thread and process pools for concurrency, per-task request and response validation, lifecycle hooks, and an Inspector for health checks and operations. This guide covers setup, task processing, broker-specific usage, and operational considerations. For the project overview and a minimal runnable example, see the [root README](../README.en.md).
 
 ## How message processing works
 

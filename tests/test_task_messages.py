@@ -9,19 +9,19 @@ from unittest.mock import (
 	call,
 	patch,
 )
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Connection,
 	PrioritySupport,
 	RemoteError,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	declare,
 	Run,
 	Worker,
 	emit,
 	request,
 )
-from DefStream.Worker import __all__ as worker_exports
+from JustStream.Worker import __all__ as worker_exports
 from tests._support import (
 	call_with_invalid_input,
 )
@@ -151,7 +151,7 @@ class MessageTests(TestCase):
 			]),
 		)
 		broker.priority_parameters.return_value = Task.parameters
-		with patch('DefStream.Worker.Message.sleep') as wait:
+		with patch('JustStream.Worker.Message.sleep') as wait:
 			self.assertEqual(
 				emit(
 					{'a': 1},
@@ -204,7 +204,7 @@ class MessageTests(TestCase):
 			]),
 		)
 		broker.priority_parameters.return_value = Task.parameters
-		with patch('DefStream.Worker.Message.sleep') as wait:
+		with patch('JustStream.Worker.Message.sleep') as wait:
 			self.assertEqual(
 				request(
 					{'a': 1},
@@ -247,7 +247,7 @@ class MessageTests(TestCase):
 					request=Mock(side_effect=RuntimeError('broker call failed')),
 				)
 				with self.subTest(helper=helper, retry=retry), patch(
-					'DefStream.Worker.Message.sleep',
+					'JustStream.Worker.Message.sleep',
 				) as wait:
 					with self.assertRaisesRegex(
 						RuntimeError,
@@ -284,7 +284,7 @@ class MessageTests(TestCase):
 		broker = Mock(
 			emit=Mock(side_effect=errors),
 		)
-		with patch('DefStream.Worker.Message.sleep') as wait:
+		with patch('JustStream.Worker.Message.sleep') as wait:
 			with self.assertRaises(RuntimeError) as raised:
 				emit(
 					{},
@@ -364,7 +364,7 @@ class MessageTests(TestCase):
 					request=Mock(),
 				)
 				with self.subTest(helper=helper, interval=interval), patch(
-					'DefStream.Worker.Message.sleep',
+					'JustStream.Worker.Message.sleep',
 				) as wait:
 					with self.assertRaises(ValueError):
 						helper(
@@ -397,7 +397,7 @@ class MessageTests(TestCase):
 					**{helper.__name__: operation},
 				)
 				with self.subTest(helper=helper, interval=interval), patch(
-					'DefStream.Worker.Message.sleep',
+					'JustStream.Worker.Message.sleep',
 				) as wait:
 					self.assertIs(
 						helper(

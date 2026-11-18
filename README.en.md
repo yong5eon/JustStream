@@ -1,4 +1,4 @@
-# DefStream
+# JustStream
 
 Synchronous event/message processing with pluggable broker adapters
 
@@ -8,7 +8,7 @@ Synchronous event/message processing with pluggable broker adapters
 
 [한국어](./README.md) | **English**
 
-DefStream is a synchronous library for processing broker messages with ordinary Python methods. Configure task execution, acknowledgements, failure policies, and thread or process pools without `async` / `await`.
+JustStream is a synchronous library for processing broker messages with ordinary Python methods. Configure task execution, acknowledgements, failure policies, and thread or process pools without `async` / `await`.
 
 - RabbitMQ and Redis Streams broker adapters
 - One-way task publishing and synchronous RabbitMQ RPC
@@ -19,11 +19,11 @@ DefStream is a synchronous library for processing broker messages with ordinary 
 Requires Python 3.9 or later. Install the client extra for the broker you use, and provide the broker server separately.
 
 ```shell
-python -m pip install "DefStream[RabbitMQ]"
-python -m pip install "DefStream[Redis]"
+python -m pip install "JustStream[RabbitMQ]"
+python -m pip install "JustStream[Redis]"
 ```
 
-To install both adapters, use `python -m pip install "DefStream[RabbitMQ,Redis]"`. To install the core without broker clients, use `python -m pip install DefStream`.
+To install both adapters, use `python -m pip install "JustStream[RabbitMQ,Redis]"`. To install the core without broker clients, use `python -m pip install JustStream`.
 The base installation also excludes broker implementation code. Each extra installs a separate, same-version implementation distribution and its client.
 To modify the source code, see [installation isolation, development and distribution](./docs/Packaging.en.md).
 
@@ -34,8 +34,8 @@ This example uses a local RabbitMQ server at `127.0.0.1:5672`. The credentials a
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection, Reject, Subscription
-from DefStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection, Reject, Subscription
+from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(
@@ -70,6 +70,6 @@ The Worker waits for tasks on the `example.add` queue. See the [detailed guide](
 ## Documentation and releases
 
 - [Detailed guide (English)](./docs/README.en.md)
-- [Releases and change history](https://github.com/yong5eon/DefStream/releases)
+- [Releases and change history](https://github.com/yong5eon/JustStream/releases)
 
-DefStream is licensed under GNU GPL v3. See the repository's `LICENSE` file for the terms.
+JustStream is licensed under GNU GPL v3. See the repository's `LICENSE` file for the terms.

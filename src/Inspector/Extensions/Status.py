@@ -27,7 +27,7 @@ class Status(Extension):
 		self,
 		path: str,
 		*,
-		title: str = 'DefStream',
+		title: str = 'JustStream',
 		description: Optional[str] = None,
 	):
 		super().__init__(path)

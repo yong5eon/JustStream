@@ -9,8 +9,8 @@ from unittest import (
 )
 from uuid import uuid4
 
-from DefStream.Broker import RemoteError
-from DefStream.Worker import (
+from JustStream.Broker import RemoteError
+from JustStream.Worker import (
 	ThreadPool,
 	Worker,
 	WorkerSetup,
@@ -26,7 +26,7 @@ from tests.test_specifications import Add
 )
 class SpecificationRPCTests(TestCase):
 	def test_validation_and_transformed_response_over_real_rpc(self):
-		from DefStream.Broker.Implements.RabbitMQ import (
+		from JustStream.Broker.Implements.RabbitMQ import (
 			Connection,
 			Configuration,
 			Reject,
@@ -34,7 +34,7 @@ class SpecificationRPCTests(TestCase):
 
 		class Checked(
 			Add,
-			parameters={'queue': 'defstream-spec-' + uuid4().hex},
+			parameters={'queue': 'juststream-spec-' + uuid4().hex},
 			on_error=Reject(),
 		):
 			pass

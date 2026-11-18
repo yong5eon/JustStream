@@ -8,16 +8,16 @@ from unittest import (
 )
 from uuid import uuid4
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	RemoteError,
 )
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration as RabbitConfiguration,
 	Connection as RabbitConnection,
 	Reject,
 	Subscription as RabbitSubscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	ThreadPool,
 	Worker,
 	emit,
@@ -52,7 +52,7 @@ class RabbitConnectionApiTests(TestCase):
 )
 class RabbitMessageTests(TestCase):
 	def test_declare_send_request_and_dlq(self):
-		name = 'defstream-send-' + uuid4().hex
+		name = 'juststream-send-' + uuid4().hex
 		dlq = name + '.error'
 		connection = RabbitConnection(RabbitConfiguration(
 			host='127.0.0.1',

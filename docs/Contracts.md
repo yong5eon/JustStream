@@ -13,7 +13,7 @@
 ### 1. Descriptor로 스키마 작성
 
 ```python
-from DefStream.Descriptor import DumpSchema, Integer, Object, Properties, Schema
+from JustStream.Descriptor import DumpSchema, Integer, Object, Properties, Schema
 
 
 request_schema = Object(
@@ -42,9 +42,9 @@ print(DumpSchema(Schema(
 ### 2. Validator로 값 검증
 
 ```python
-from DefStream.Validator import Validator
-from DefStream.Validator.Patterns import IsInteger, IsObject
-from DefStream.Validator.Patterns.Object import IsMappingOf, IsRequiredIn
+from JustStream.Validator import Validator
+from JustStream.Validator.Patterns import IsInteger, IsObject
+from JustStream.Validator.Patterns.Object import IsMappingOf, IsRequiredIn
 
 
 request_validator = Validator(
@@ -78,8 +78,8 @@ print(request_validator({'a': 10, 'b': 20}))
 아래는 문자열을 정수로 변환한 후 0 이상인지 검사하는 독립적인 예제입니다.
 
 ```python
-from DefStream.Validator import Validator
-from DefStream.Validator.Patterns import IsGreaterEqualTo, ToInteger
+from JustStream.Validator import Validator
+from JustStream.Validator.Patterns import IsGreaterEqualTo, ToInteger
 
 
 non_negative_integer = Validator(
@@ -101,13 +101,13 @@ print(non_negative_integer('10'))
 이 클래스를 Worker에 등록하면 요청은 `run()` 전에, 반환값은 완료 훅 전에 검증합니다.
 
 ```python
-from DefStream.Broker.Implements.RabbitMQ import Reject, Subscription
-from DefStream.Worker import Run, Specification
+from JustStream.Broker.Implements.RabbitMQ import Reject, Subscription
+from JustStream.Worker import Run, Specification
 
 
 class Add(
   Run,
-  parameters=Subscription(queue='defstream.example.validated-add'),
+  parameters=Subscription(queue='juststream.example.validated-add'),
   on_error=Reject(),
   request=Specification(
     schema=request_schema,

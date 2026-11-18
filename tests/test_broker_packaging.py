@@ -51,14 +51,14 @@ def distribution_files(package: Distribution) -> set[str]:
 
 class BrokerPackagingTests(TestCase):
 	def test_distribution_contains_play_extension_and_template(self) -> None:
-		package = installed_distribution('DefStream')
+		package = installed_distribution('JustStream')
 		files: set[str] = distribution_files(package)
 		for name in (
 			'Play.py',
 			'Play.html',
 		):
 			self.assertIn(
-				'DefStream/Inspector/Extensions/' + name,
+				'JustStream/Inspector/Extensions/' + name,
 				files,
 			)
 		for name in (
@@ -66,13 +66,13 @@ class BrokerPackagingTests(TestCase):
 			'Console.html',
 		):
 			self.assertNotIn(
-				'DefStream/Inspector/Extensions/' + name,
+				'JustStream/Inspector/Extensions/' + name,
 				files,
 			)
 		return
 
 	def test_brokers_are_owned_by_the_selected_distribution(self) -> None:
-		package = installed_distribution('DefStream')
+		package = installed_distribution('JustStream')
 		files: set[str] = distribution_files(package)
 		for broker in (
 			'RabbitMQ',
@@ -80,7 +80,7 @@ class BrokerPackagingTests(TestCase):
 		):
 			with self.subTest(broker=broker):
 				owner_files: set[str] = distribution_files(
-					installed_distribution('DefStream-' + broker),
+					installed_distribution('JustStream-' + broker),
 				)
 				for module in (
 					'__init__',
@@ -92,13 +92,13 @@ class BrokerPackagingTests(TestCase):
 					'Serializer',
 					'Subscription',
 				):
-					path = f'DefStream/Broker/Implements/{broker}/{module}.py'
+					path = f'JustStream/Broker/Implements/{broker}/{module}.py'
 					self.assertNotIn(path, files)
 					self.assertIn(path, owner_files)
 		return
 
 	def test_dependencies_match_the_distribution_mode(self) -> None:
-		package = installed_distribution('DefStream')
+		package = installed_distribution('JustStream')
 		dependencies = require_value(package.requires)
 		self.assertEqual(
 			len(dependencies),
@@ -110,21 +110,21 @@ class BrokerPackagingTests(TestCase):
 			'Redis',
 		):
 			self.assertTrue(any(
-				requirement.startswith(f'DefStream-{broker}=={version};')
+				requirement.startswith(f'JustStream-{broker}=={version};')
 				and broker.lower() in requirement.lower()
 				for requirement in dependencies
 			))
 			self.assertIn(
-				f'DefStream=={version}',
-				require_value(installed_distribution('DefStream-' + broker).requires),
+				f'JustStream=={version}',
+				require_value(installed_distribution('JustStream-' + broker).requires),
 			)
 		self.assertIn(
 			'pika>=1.3.2',
-			require_value(installed_distribution('DefStream-RabbitMQ').requires),
+			require_value(installed_distribution('JustStream-RabbitMQ').requires),
 		)
 		self.assertIn(
 			'redis>=5.1.1',
-			require_value(installed_distribution('DefStream-Redis').requires),
+			require_value(installed_distribution('JustStream-Redis').requires),
 		)
 		return
 
@@ -132,15 +132,15 @@ class BrokerPackagingTests(TestCase):
 		for blocked, modules in (
 			(
 				['pika', 'redis'],
-				['DefStream', 'DefStream.Broker', 'DefStream.Worker', 'DefStream.Inspector'],
+				['JustStream', 'JustStream.Broker', 'JustStream.Worker', 'JustStream.Inspector'],
 			),
 			(
 				['redis'],
-				['DefStream.Broker.Implements.RabbitMQ'],
+				['JustStream.Broker.Implements.RabbitMQ'],
 			),
 			(
 				['pika'],
-				['DefStream.Broker.Implements.Redis'],
+				['JustStream.Broker.Implements.Redis'],
 			),
 		):
 			with self.subTest(blocked=blocked), TemporaryDirectory() as directory:

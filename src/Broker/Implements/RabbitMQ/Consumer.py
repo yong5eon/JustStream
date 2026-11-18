@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Consumer as BaseConsumer,
 	Recoverable,
 	EventHandler,
@@ -19,7 +19,7 @@ from .Event import (
 	Requeue,
 )
 from .Subscription import Subscription
-from DefStream.Broker.Event import EventErrorPolicy
+from JustStream.Broker.Event import EventErrorPolicy
 from typing import (
 	Any,
 	Callable,

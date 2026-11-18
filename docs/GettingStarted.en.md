@@ -2,33 +2,33 @@
 
 [← Guide index](./README.en.md)
 
-Install DefStream and run a first worker.
+Install JustStream and run a first worker.
 
 ## Installation
 
 Requires Python **3.9 or newer**. Prepare the broker server you intend to use.
 
 ```shell
-python -m pip install "DefStream[RabbitMQ]"
+python -m pip install "JustStream[RabbitMQ]"
 ```
 
 Choose Redis or both adapters as needed:
 
 ```shell
-python -m pip install "DefStream[Redis]"
-python -m pip install "DefStream[RabbitMQ,Redis]"
+python -m pip install "JustStream[Redis]"
+python -m pip install "JustStream[RabbitMQ,Redis]"
 ```
 
-For the core alone, use `python -m pip install DefStream`.
+For the core alone, use `python -m pip install JustStream`.
 The base installation excludes both broker implementations and clients.
-The `RabbitMQ` extra installs the same-version `DefStream-RabbitMQ` and `pika>=1.3.2`;
-the `Redis` extra installs the same-version `DefStream-Redis` and `redis>=5.1.1`.
+The `RabbitMQ` extra installs the same-version `JustStream-RabbitMQ` and `pika>=1.3.2`;
+the `Redis` extra installs the same-version `JustStream-Redis` and `redis>=5.1.1`.
 
 | Installation choice | Python import path | Guide |
 | --- | --- | --- |
-| `DefStream` | `DefStream` | This document |
-| `DefStream[RabbitMQ]` | `DefStream.Broker.Implements.RabbitMQ` | [RabbitMQ usage](./RabbitMQ.en.md#rabbitmq-usage) |
-| `DefStream[Redis]` | `DefStream.Broker.Implements.Redis` | [Redis usage](./Redis.en.md#redis-usage) |
+| `JustStream` | `JustStream` | This document |
+| `JustStream[RabbitMQ]` | `JustStream.Broker.Implements.RabbitMQ` | [RabbitMQ usage](./RabbitMQ.en.md#rabbitmq-usage) |
+| `JustStream[Redis]` | `JustStream.Broker.Implements.Redis` | [Redis usage](./Redis.en.md#redis-usage) |
 
 The core and implementations share one repository and version but install as separate distributions.
 To modify the source code, see [installation isolation, development and distribution](./Packaging.en.md).
@@ -44,16 +44,16 @@ or a secret store in production.
 ### 1. Define a task: `tasks.py`
 
 ```python
-from DefStream.Broker.Implements.RabbitMQ import Reject, Subscription
-from DefStream.Worker import Run
+from JustStream.Broker.Implements.RabbitMQ import Reject, Subscription
+from JustStream.Worker import Run
 
 
 class Add(
   Run,
   parameters=Subscription(
-    queue='defstream.example.add',
+    queue='juststream.example.add',
     qos=4,
-    error='defstream.example.add.error',
+    error='juststream.example.add.error',
   ),
   on_error=Reject(),
 ):
@@ -73,7 +73,7 @@ declares an error queue to receive rejected messages.
 
 ### 2. Run the Worker: `worker.py`
 
-`Worker` accepts `DefStream.Broker.Connection` directly.
+`Worker` accepts `JustStream.Broker.Connection` directly.
 The connection contract only requires `connect()` and `close()`. The worker checks
 for `GetConsumer` support internally when it runs. A broker that cannot create
 a consumer raises `TypeError`; no worker-specific connection type is needed.
@@ -81,8 +81,8 @@ a consumer raises `TypeError`; no worker-specific connection type is needed.
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection
-from DefStream.Worker import ThreadPool, Worker, WorkerSetup, declare
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
+from JustStream.Worker import ThreadPool, Worker, WorkerSetup, declare
 from tasks import Add
 
 
@@ -145,8 +145,8 @@ sequenceDiagram
 Run this in another terminal while the Worker is running.
 
 ```python
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection
-from DefStream.Worker import emit, request
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
+from JustStream.Worker import emit, request
 from tasks import Add
 
 

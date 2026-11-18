@@ -13,8 +13,8 @@ Configure it before starting the Worker and pass `Worker(..., inspector=inspecto
 This snippet reuses the `Connection` and `Configuration` imports from `worker.py`.
 
 ```python
-from DefStream.Inspector import Inspector
-from DefStream.Inspector.Extensions import (
+from JustStream.Inspector import Inspector
+from JustStream.Inspector.Extensions import (
   Play,
   Metrics,
   Ping,
@@ -43,7 +43,7 @@ inspector = Inspector(
     Play(
       '/play',
       broker=create_connection,
-      title='DefStream',
+      title='JustStream',
     ),
   ),
 )
@@ -52,7 +52,7 @@ inspector = Inspector(
 | Path | Purpose |
 | --- | --- |
 | `/ping` | Check subscription readiness and consumer-loop responsiveness: 200 when healthy, 503 during startup/shutdown or when unresponsive |
-| `/metrics` | Prometheus metrics with the `defstream_` prefix |
+| `/metrics` | Prometheus metrics with the `juststream_` prefix |
 | `/status` | Successes, failures, throughput, and duration; register with exactly one `Metrics` |
 | `/asyncapi.json` | Registered task request/reply contracts as AsyncAPI JSON |
 | `/play` | Browse tasks and schemas, send JSON messages, and execute RPC on supported brokers |
@@ -88,7 +88,7 @@ Inspector has no built-in TLS and is not a public web server.
 Play's connection factory must return a new connection on every call,
 never the Worker's connection.
 
-Play's `broker` parameter uses the `DefStream.Broker.BrokerFactory` contract.
+Play's `broker` parameter uses the `JustStream.Broker.BrokerFactory` contract.
 Its `__call__() -> Connection` takes no arguments and returns a new connection.
 Functions such as `create_connection` above and lambdas remain valid without changes.
 For a class-based factory, you can inherit `BrokerFactory` and implement `__call__`.
@@ -96,7 +96,7 @@ For a class-based factory, you can inherit `BrokerFactory` and implement `__call
 
 ## Logging
 
-DefStream records messages through standard `logging` without configuring handlers,
+JustStream records messages through standard `logging` without configuring handlers,
 formatters, or levels. Select the sources your application needs. The samples
 output only the `Sample`, `Worker`, `Task`, and `Broker` logger hierarchies, replacing their
 `print()` calls with logging. The Worker's existing startup banner is still
@@ -143,9 +143,9 @@ output from other handlers already installed. To receive only broker logs, selec
   requiring attention are WARNING, and processing failures are ERROR.
   Bodies, results, and credentials are excluded from the default log context.
 - RabbitMQ and Redis broker loggers use the `Broker.RabbitMQ` and `Broker.Redis`
-  hierarchies. Update filters and handlers that use the former `DefStream.Broker...` names.
+  hierarchies. Update filters and handlers that use the former `JustStream.Broker...` names.
 - Worker logs use the `Worker` and `Task` hierarchies, while Inspector logs use
-  `Worker.Inspector`. Update filters and handlers configured with former `DefStream.*` names.
+  `Worker.Inspector`. Update filters and handlers configured with former `JustStream.*` names.
 - Without any handlers, Python's `lastResort` may write WARNING and higher to
   stderr. Do not put sensitive values in user exception messages: failure
   tracebacks include those messages.
@@ -186,6 +186,6 @@ adding the same handlers repeatedly.
 - [Worker without an external broker](../samples/Worker/Sample.py)
 - [RabbitMQ Worker and RPC client](../samples/Worker/RabbitMQ)
 - [Redis Worker](../samples/Worker/Redis/Sample.py)
-- [Releases and change history](https://github.com/yong5eon/DefStream/releases)
+- [Releases and change history](https://github.com/yong5eon/JustStream/releases)
 
 Licensed under GNU GPL v3. See [LICENSE](../LICENSE) for the terms.

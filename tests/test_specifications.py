@@ -18,7 +18,7 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Descriptor import (
+from JustStream.Descriptor import (
 	AllOf,
 	Array,
 	DumpSchema,
@@ -31,24 +31,24 @@ from DefStream.Descriptor import (
 	ToObject,
 	ToSchema,
 )
-from DefStream.Inspector import Inspector
-from DefStream.Inspector.Extensions import Specifications
-from DefStream.Validator import (
+from JustStream.Inspector import Inspector
+from JustStream.Inspector.Extensions import Specifications
+from JustStream.Validator import (
 	Validate,
 	Validator,
 )
-from DefStream.Validator.Patterns import (
+from JustStream.Validator.Patterns import (
 	IsGreaterThan,
 	IsInteger,
 	IsObject,
 	SetDefault,
 	ToInteger,
 )
-from DefStream.Validator.Patterns.Object import (
+from JustStream.Validator.Patterns.Object import (
 	IsMappingOf,
 	IsRequiredIn,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	ProcessPool,
 	Run,
 	Specification,
@@ -170,7 +170,7 @@ class ContractTests(TestCase):
 			schema['properties']['b']['default'],
 			2,
 		)
-		self.assertFalse(any('DataModel' in name for name in modules if name.startswith('DefStream.Descriptor')))
+		self.assertFalse(any('DataModel' in name for name in modules if name.startswith('JustStream.Descriptor')))
 		batch_schema = DumpSchema(ToSchema(Batch))
 		self.assertEqual(
 			batch_schema['properties']['items']['items'],
@@ -593,7 +593,7 @@ class DocumentTests(TestCase):
 		class Formatted(
 			Add,
 			parameters={'queue': 'formatted'},
-			request=Specification(format='application/vnd.defstream.task+json'),
+			request=Specification(format='application/vnd.juststream.task+json'),
 			response=Specification(
 				schema=String(),
 				format='text/plain',
@@ -610,7 +610,7 @@ class DocumentTests(TestCase):
 			for message in channel['messages'].values()
 		}
 		self.assertIn(
-			'application/vnd.defstream.task+json',
+			'application/vnd.juststream.task+json',
 			formats,
 		)
 		self.assertIn(

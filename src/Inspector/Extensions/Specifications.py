@@ -68,7 +68,7 @@ class Specifications(Extension):
 		if worker is None:
 			raise RuntimeError('Specifications requires an attached Worker')
 		info = {
-			'title': 'DefStream',
+			'title': 'JustStream',
 			'version': self.version,
 		}
 		if self.description is not None:

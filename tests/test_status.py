@@ -10,13 +10,13 @@ from unittest.mock import (
 	patch,
 )
 
-from DefStream.Inspector import Inspector
-from DefStream.Inspector.Extensions import (
+from JustStream.Inspector import Inspector
+from JustStream.Inspector.Extensions import (
 	Metrics,
 	Ping,
 	Status,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Run,
 	ThreadPool,
 	Worker,
@@ -53,7 +53,7 @@ class StatusTests(TestCase):
 		self.inspector.start(self.worker)
 
 	def test_public_extensions_use_replacement_names(self):
-		extensions = import_module('DefStream.Inspector.Extensions')
+		extensions = import_module('JustStream.Inspector.Extensions')
 
 		self.assertIs(extensions.Status, Status)
 		self.assertIs(extensions.Ping, Ping)
@@ -88,7 +88,7 @@ class StatusTests(TestCase):
 		self.worker.running.set()
 		started = self.metrics.begin(self.task)
 		with patch.object(
-			import_module('DefStream.Inspector.Extensions.Metrics'),
+			import_module('JustStream.Inspector.Extensions.Metrics'),
 			'monotonic',
 			return_value=started + 0.25,
 		):
@@ -203,7 +203,7 @@ class StatusTests(TestCase):
 			headers['Content-Security-Policy'],
 		)
 		with patch.object(
-			import_module('DefStream.Inspector.Extensions.Status'),
+			import_module('JustStream.Inspector.Extensions.Status'),
 			'files',
 		) as resources:
 			resource = resources.return_value.joinpath.return_value
@@ -280,7 +280,7 @@ class StatusTests(TestCase):
 
 	def test_second_minute_boundaries_and_retention(self):
 		with patch.object(
-			import_module('DefStream.Inspector.Extensions.Metrics'),
+			import_module('JustStream.Inspector.Extensions.Metrics'),
 			'monotonic',
 		) as clock:
 			clock.return_value = 100.0
@@ -390,7 +390,7 @@ class StatusTests(TestCase):
 
 	def test_oldest_pending_collision_and_rejected_submission(self):
 		with patch.object(
-			import_module('DefStream.Inspector.Extensions.Metrics'),
+			import_module('JustStream.Inspector.Extensions.Metrics'),
 			'monotonic',
 		) as clock:
 			clock.return_value = 100.0

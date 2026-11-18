@@ -8,13 +8,13 @@ from unittest.mock import (
 
 from pika.exceptions import ChannelClosedByBroker
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration,
 	Connection,
 	Consumer,
 	Subscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Run,
 	declare,
 )

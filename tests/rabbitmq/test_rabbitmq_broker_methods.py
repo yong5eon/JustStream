@@ -4,7 +4,7 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Connection,
 	Configuration,
 	ExchangeType,

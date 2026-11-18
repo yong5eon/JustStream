@@ -17,13 +17,13 @@ from pika import (
 )
 from pika.exceptions import ChannelClosedByBroker
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration,
 	Connection,
 	Requeue,
 	Subscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Run,
 	declare,
 	emit,
@@ -260,7 +260,7 @@ class PriorityTests(TestCase):
 		return
 
 	@patch.object(
-		import_module('DefStream.Broker.Implements.RabbitMQ.Queue'),
+		import_module('JustStream.Broker.Implements.RabbitMQ.Queue'),
 		'BlockingConnection',
 	)
 	def test_rpc_publication_preserves_priority_and_metadata(
@@ -341,16 +341,16 @@ class PriorityIntegrationTests(TestCase):
 			host='127.0.0.1',
 			port=rabbitmq_test_port(),
 			username=environ.get(
-				'DEFSTREAM_RABBITMQ_USERNAME',
+				'JUSTSTREAM_RABBITMQ_USERNAME',
 				'guest',
 			),
 			password=environ.get(
-				'DEFSTREAM_RABBITMQ_PASSWORD',
+				'JUSTSTREAM_RABBITMQ_PASSWORD',
 				'guest',
 			),
 		))
 		broker.connect()
-		name = 'defstream-priority-' + uuid4().hex
+		name = 'juststream-priority-' + uuid4().hex
 
 		class Task(
 			Run,

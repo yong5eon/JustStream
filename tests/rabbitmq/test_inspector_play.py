@@ -4,7 +4,7 @@ from unittest import (
 	skipUnless,
 )
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration,
 	Connection,
 )

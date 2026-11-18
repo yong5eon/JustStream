@@ -1,4 +1,4 @@
-from DefStream.Broker import EventHandler
+from JustStream.Broker import EventHandler
 from .Configuration import (
 	Configuration,
 	ConnectionType,

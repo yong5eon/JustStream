@@ -7,8 +7,8 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Broker.Implements.RabbitMQ import Reject
-from DefStream.Worker import (
+from JustStream.Broker.Implements.RabbitMQ import Reject
+from JustStream.Worker import (
 	RunComplete,
 	RunError,
 	Context,

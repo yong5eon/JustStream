@@ -9,8 +9,8 @@ from unittest import (
 from unittest.mock import (
 	patch,
 )
-from DefStream.Broker.Errors import RemoteError
-from DefStream.Inspector.Extensions import (
+from JustStream.Broker.Errors import RemoteError
+from JustStream.Inspector.Extensions import (
 	Play,
 	Specifications,
 )
@@ -32,11 +32,11 @@ class PlayExtensionTests(PlayExtensionSupport, TestCase):
 			200,
 		)
 		self.assertIn(
-			b'<title>DefStream</title>',
+			b'<title>JustStream</title>',
 			body,
 		)
 		self.assertIn(
-			b'DefStream Inspector &middot; Play',
+			b'JustStream Inspector &middot; Play',
 			body,
 		)
 		self.assertNotIn(
@@ -128,7 +128,7 @@ class PlayExtensionTests(PlayExtensionSupport, TestCase):
 
 	def test_html_is_read_again_on_each_refresh(self):
 		with patch.object(
-			import_module('DefStream.Inspector.Extensions.Play'),
+			import_module('JustStream.Inspector.Extensions.Play'),
 			'files',
 		) as resources:
 			resource = resources.return_value.joinpath.return_value

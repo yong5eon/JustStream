@@ -1,12 +1,12 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from DefStream.Validator import Patterns
-from DefStream.Validator.Patterns import (
+from JustStream.Validator import Patterns
+from JustStream.Validator.Patterns import (
 	IsOptional,
 	IsTypeOf,
 )
-from DefStream.Validator.Patterns.Common import (
+from JustStream.Validator.Patterns.Common import (
 	IsOptional as CommonIsOptional,
 	__all__ as common_exports,
 )

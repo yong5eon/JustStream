@@ -15,7 +15,7 @@ from redis import Redis
 from redis.cluster import RedisCluster
 from redis.exceptions import ResponseError
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Poppable,
 	Readable,
 	Sendable,
@@ -45,7 +45,7 @@ class Queue(
 		encode: Encoder,
 		decode: Decoder,
 		name: str,
-		group: str = 'DefStream',
+		group: str = 'JustStream',
 	):
 		self.subscription = Subscription(
 			name,

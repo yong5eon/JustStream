@@ -259,44 +259,44 @@ class Metrics(Extension):
 		running = snapshot['running']
 		uptime = snapshot['uptime']
 		lines = [
-			'# HELP defstream_worker_running Worker consumer lifecycle is running; not a heartbeat probe.',
-			'# TYPE defstream_worker_running gauge',
-			f'defstream_worker_running {int(running)}',
-			'# HELP defstream_worker_uptime_seconds Seconds since Inspector startup.',
-			'# TYPE defstream_worker_uptime_seconds gauge',
-			f'defstream_worker_uptime_seconds {uptime}',
-			'# HELP defstream_tasks_active Submitted task executions not yet completed.',
-			'# TYPE defstream_tasks_active gauge',
-			'# HELP defstream_tasks_total Completed execution attempts including retries.',
-			'# TYPE defstream_tasks_total counter',
-			'# HELP defstream_task_duration_seconds End-to-end execution time including pool wait and hooks.',
-			'# TYPE defstream_task_duration_seconds summary',
-			'# HELP defstream_task_oldest_active_seconds Age of oldest submitted unfinished attempt including pool wait.',
-			'# TYPE defstream_task_oldest_active_seconds gauge',
-			'# HELP defstream_tasks_window Completed attempts in the last fully elapsed second or minute window.',
-			'# TYPE defstream_tasks_window gauge',
-			'# HELP defstream_task_window_duration_seconds_sum Total duration of attempts completed in the window.',
-			'# TYPE defstream_task_window_duration_seconds_sum gauge',
-			'# HELP defstream_task_window_duration_seconds_max Maximum duration of attempts completed in the window.',
-			'# TYPE defstream_task_window_duration_seconds_max gauge',
+			'# HELP juststream_worker_running Worker consumer lifecycle is running; not a heartbeat probe.',
+			'# TYPE juststream_worker_running gauge',
+			f'juststream_worker_running {int(running)}',
+			'# HELP juststream_worker_uptime_seconds Seconds since Inspector startup.',
+			'# TYPE juststream_worker_uptime_seconds gauge',
+			f'juststream_worker_uptime_seconds {uptime}',
+			'# HELP juststream_tasks_active Submitted task executions not yet completed.',
+			'# TYPE juststream_tasks_active gauge',
+			'# HELP juststream_tasks_total Completed execution attempts including retries.',
+			'# TYPE juststream_tasks_total counter',
+			'# HELP juststream_task_duration_seconds End-to-end execution time including pool wait and hooks.',
+			'# TYPE juststream_task_duration_seconds summary',
+			'# HELP juststream_task_oldest_active_seconds Age of oldest submitted unfinished attempt including pool wait.',
+			'# TYPE juststream_task_oldest_active_seconds gauge',
+			'# HELP juststream_tasks_window Completed attempts in the last fully elapsed second or minute window.',
+			'# TYPE juststream_tasks_window gauge',
+			'# HELP juststream_task_window_duration_seconds_sum Total duration of attempts completed in the window.',
+			'# TYPE juststream_task_window_duration_seconds_sum gauge',
+			'# HELP juststream_task_window_duration_seconds_max Maximum duration of attempts completed in the window.',
+			'# TYPE juststream_task_window_duration_seconds_max gauge',
 		]
 		for task, stats in snapshot['tasks'].items():
 			labels = 'task="' + label(task) + '"'
 			lines.extend((
-				f'defstream_tasks_active{{{labels}}} {stats["active"]}',
-				f'defstream_tasks_total{{{labels},outcome="success"}} {stats["success"]}',
-				f'defstream_tasks_total{{{labels},outcome="failure"}} {stats["failure"]}',
-				f'defstream_task_duration_seconds_count{{{labels}}} {stats["success"] + stats["failure"]}',
-				f'defstream_task_duration_seconds_sum{{{labels}}} {stats["duration"]}',
-				f'defstream_task_oldest_active_seconds{{{labels}}} {stats["oldest_active"]}',
+				f'juststream_tasks_active{{{labels}}} {stats["active"]}',
+				f'juststream_tasks_total{{{labels},outcome="success"}} {stats["success"]}',
+				f'juststream_tasks_total{{{labels},outcome="failure"}} {stats["failure"]}',
+				f'juststream_task_duration_seconds_count{{{labels}}} {stats["success"] + stats["failure"]}',
+				f'juststream_task_duration_seconds_sum{{{labels}}} {stats["duration"]}',
+				f'juststream_task_oldest_active_seconds{{{labels}}} {stats["oldest_active"]}',
 			))
 			for seconds, window in stats['windows'].items():
 				window_labels = labels + ',window_seconds="' + seconds + '"'
 				lines.extend((
-					f'defstream_tasks_window{{{window_labels},outcome="success"}} {window["success"]}',
-					f'defstream_tasks_window{{{window_labels},outcome="failure"}} {window["failure"]}',
-					f'defstream_task_window_duration_seconds_sum{{{window_labels}}} {window["duration"]}',
-					f'defstream_task_window_duration_seconds_max{{{window_labels}}} {window["max_duration"]}',
+					f'juststream_tasks_window{{{window_labels},outcome="success"}} {window["success"]}',
+					f'juststream_tasks_window{{{window_labels},outcome="failure"}} {window["failure"]}',
+					f'juststream_task_window_duration_seconds_sum{{{window_labels}}} {window["duration"]}',
+					f'juststream_task_window_duration_seconds_max{{{window_labels}}} {window["max_duration"]}',
 				))
 		return '\n'.join(lines) + '\n'
 

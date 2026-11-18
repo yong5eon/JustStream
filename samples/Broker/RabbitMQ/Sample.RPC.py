@@ -9,8 +9,8 @@ from logging import (
 from threading import Event as PyEvent
 from uuid import uuid4
 
-from DefStream.Broker import RemoteError
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker import RemoteError
+from JustStream.Broker.Implements.RabbitMQ import (
 	Connection,
 	Configuration,
 	Consumer,
@@ -111,7 +111,7 @@ if __name__ == '__main__':
 		password='guest',
 	)
 	broker = Connection(configuration)
-	name = 'defstream-rpc-sample-' + uuid4().hex
+	name = 'juststream-rpc-sample-' + uuid4().hex
 	ready = PyEvent()
 	stopping = PyEvent()
 	created_queue = False

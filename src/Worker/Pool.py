@@ -180,7 +180,7 @@ class Pool:
 				raise RuntimeError('Pool is closed')
 			previous = self.pool
 			if not isinstance(previous, Executor):
-				raise TypeError('Pool recovery requires a DefStream Executor')
+				raise TypeError('Pool recovery requires a JustStream Executor')
 			self.closed = True
 		previous.abort()
 		with self.lock:

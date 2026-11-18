@@ -7,7 +7,7 @@ from logging import (
 )
 from uuid import uuid4
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
 	Connection,
 	Configuration,
 )
@@ -36,7 +36,7 @@ def main() -> None:
 	root_logger.addHandler(handler)
 
 	broker = Connection(Configuration())
-	name = 'defstream-sample-' + uuid4().hex
+	name = 'juststream-sample-' + uuid4().hex
 	try:
 		broker.connect()
 		queue = broker.queue(name)

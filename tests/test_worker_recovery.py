@@ -43,12 +43,12 @@ from pika.exceptions import (
 from pika import BlockingConnection
 from pika.adapters.blocking_connection import BlockingChannel
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration,
 	Connection,
 	Consumer,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Pool,
 	PoolCleanup,
 	PoolSetup,
@@ -57,7 +57,7 @@ from DefStream.Worker import (
 	ThreadPool,
 	Worker,
 )
-from DefStream.Worker.Executor import Executor
+from JustStream.Worker.Executor import Executor
 from tests._support import (
 	call_with_invalid_input,
 	require_instance,
@@ -205,7 +205,7 @@ class RecoveryTests(TestCase):
 		return worker
 
 	def run_worker(self, worker):
-		with patch.object(import_module('DefStream.Worker.Worker'), 'startup'):
+		with patch.object(import_module('JustStream.Worker.Worker'), 'startup'):
 			worker.run()
 
 	def test_first_attempt_is_immediate_and_recovery_resets_budget(self):
@@ -290,7 +290,7 @@ class RecoveryTests(TestCase):
 		self.assertIsNone(broker.connection)
 		self.assertIsNone(broker.publisher)
 		with patch.object(
-			import_module('DefStream.Broker.Implements.RabbitMQ.Connection'),
+			import_module('JustStream.Broker.Implements.RabbitMQ.Connection'),
 			'BlockingConnection',
 			return_value=replacement,
 		) as connect:
@@ -563,7 +563,7 @@ class RecoveryTests(TestCase):
 	def test_custom_executor_recovery_fails_explicitly_without_replacing_it(self):
 		executor = Mock()
 		pool = Pool(executor, 1)
-		with self.assertRaisesRegex(TypeError, 'DefStream Executor'):
+		with self.assertRaisesRegex(TypeError, 'JustStream Executor'):
 			pool.restart()
 		self.assertIs(pool.pool, executor)
 		self.assertFalse(pool.closed)

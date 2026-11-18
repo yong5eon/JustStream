@@ -4,13 +4,13 @@
 
 ## Installed files
 
-The `DefStream` core has no broker implementations. The `RabbitMQ` and `Redis` extras install the same-version `DefStream-RabbitMQ` and `DefStream-Redis` distributions and their external clients. Existing Python import paths remain unchanged.
+The `JustStream` core has no broker implementations. The `RabbitMQ` and `Redis` extras install the same-version `JustStream-RabbitMQ` and `JustStream-Redis` distributions and their external clients. Existing Python import paths remain unchanged.
 
 In a new environment unselected implementation files and clients are absent. Omitting an extra later does not uninstall an existing implementation; explicitly remove its distribution when no longer needed.
 
 ```mermaid
 flowchart LR
-  A["Install DefStream[Redis]"] --> B["Core"]
+  A["Install JustStream[Redis]"] --> B["Core"]
   A --> C["Same-version Redis implementation"]
   C --> D["redis client"]
 ```
@@ -32,7 +32,7 @@ python -m pip install -e ".[Redis]"
 python -m pip install -e ".[RabbitMQ,Redis]"
 ```
 
-The selected extra installs the matching-version `DefStream-RabbitMQ` or `DefStream-Redis` wheel and its external client. The editable installation connects the repository's core source. Reinstalling with another extra does not automatically remove a previously installed implementation; explicitly uninstall it when it is no longer needed.
+The selected extra installs the matching-version `JustStream-RabbitMQ` or `JustStream-Redis` wheel and its external client. The editable installation connects the repository's core source. Reinstalling with another extra does not automatically remove a previously installed implementation; explicitly uninstall it when it is no longer needed.
 
 ### Try your changes
 
