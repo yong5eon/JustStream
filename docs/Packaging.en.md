@@ -73,14 +73,14 @@ CI checks build and installation isolation on supported Python versions. Release
 
 ### Tags for release notes
 
-When a new public version is released, the message of an annotated tag named after the commit SHA becomes the GitHub Release body. The tag name is the full SHA without any prefix. The release fails if the tag is missing, is a lightweight tag, or has an empty message. Rebuilding only the wheel of an existing public version reuses the existing release notes and needs no tag.
+When a new public version is released, the message of an annotated tag named `changes/<commit SHA>` becomes the GitHub Release body. The `changes/` prefix is required because GitHub rejects tag names that consist only of a full SHA. The release fails if the tag is missing, is a lightweight tag, or has an empty message. Rebuilding only the wheel of an existing public version reuses the existing release notes and needs no tag.
 
-- A direct push to `master` reads the tag of the last pushed commit SHA from the original repository.
-- A merged PR reads the tag of the PR's last commit (`head.sha`), not the merge result, from the PR's source repository (original or fork).
+- A direct push to `master` reads the `changes/<SHA>` tag of the last pushed commit from the original repository.
+- A merged PR reads the `changes/<SHA>` tag of the PR's last commit (`head.sha`), not the merge result, from the PR's source repository (original or fork).
 
 Push the tag to the source repository before pushing or merging the PR.
 
 ```shell
-git tag -a "$(git rev-parse HEAD)" -F CHANGELOG.md
-git push origin "$(git rev-parse HEAD)"
+git tag -a "changes/$(git rev-parse HEAD)" -F CHANGELOG.md
+git push origin "changes/$(git rev-parse HEAD)"
 ```

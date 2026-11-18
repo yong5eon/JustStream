@@ -145,10 +145,11 @@ jobs:
               else:
                   sha = head
                   source_repository = repository
-              where = f'tag {sha} in {source_repository}'
+              tag = f'changes/{sha}'
+              where = f'tag {tag} in {source_repository}'
               try:
                   ref = loads(check_output([
-                      'gh', 'api', f'repos/{source_repository}/git/ref/tags/{sha}',
+                      'gh', 'api', f'repos/{source_repository}/git/ref/tags/{tag}',
                   ]))
               except CalledProcessError as error:
                   raise ValueError(f'Release notes tag not found: {where}') from error

@@ -58,7 +58,7 @@ class ReleaseNotesTests(TestCase):
 		self.assertEqual(self.run_collector(), b'tag notes')
 		self.assertEqual(
 			self.api_paths()[1:],
-			['repos/example/project/git/ref/tags/test-head', 'repos/example/project/git/tags/tag-object'],
+			['repos/example/project/git/ref/tags/changes/test-head', 'repos/example/project/git/tags/tag-object'],
 		)
 		return
 
@@ -70,7 +70,7 @@ class ReleaseNotesTests(TestCase):
 				self.assertEqual(self.run_collector(), b'tag notes')
 				self.assertEqual(
 					self.api_paths()[1:],
-					[f'repos/{repository}/git/ref/tags/pr-head', f'repos/{repository}/git/tags/tag-object'],
+					[f'repos/{repository}/git/ref/tags/changes/pr-head', f'repos/{repository}/git/tags/tag-object'],
 				)
 		return
 
@@ -84,7 +84,7 @@ class ReleaseNotesTests(TestCase):
 			with self.subTest(name=name):
 				self.check_output.reset_mock()
 				self.check_output.side_effect = [dumps([[self.pull('pr-head', 'fork/project')]]).encode()] + results
-				with self.assertRaisesRegex(ValueError, 'pr-head in fork/project'):
+				with self.assertRaisesRegex(ValueError, 'changes/pr-head in fork/project'):
 					self.run_collector()
 		return
 

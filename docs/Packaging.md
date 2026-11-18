@@ -73,14 +73,14 @@ CI는 지원 Python별 빌드·설치 격리를 검사하며, 릴리즈에서 �
 
 ### 릴리스 노트용 태그
 
-새 공개 버전을 배포하면 GitHub Release 본문으로 커밋 SHA와 같은 이름의 annotated tag 메시지를 사용합니다. 접두사 없이 전체 SHA를 태그 이름으로 쓰며, 태그가 없거나 lightweight tag이거나 메시지가 비어 있으면 릴리스가 실패합니다. 같은 공개 버전의 wheel만 다시 빌드할 때는 기존 릴리스 노트를 재사용하므로 태그가 필요하지 않습니다.
+새 공개 버전을 배포하면 GitHub Release 본문으로 `changes/<커밋 SHA>` 이름의 annotated tag 메시지를 사용합니다. GitHub는 전체 SHA만으로 된 태그 이름을 허용하지 않으므로 `changes/` 접두사가 필요하며, 태그가 없거나 lightweight tag이거나 메시지가 비어 있으면 릴리스가 실패합니다. 같은 공개 버전의 wheel만 다시 빌드할 때는 기존 릴리스 노트를 재사용하므로 태그가 필요하지 않습니다.
 
-- `master`에 직접 푸시하면 푸시의 마지막 커밋 SHA 태그를 원본 저장소에서 읽습니다.
-- PR을 병합하면 병합 결과가 아니라 PR의 마지막 커밋(`head.sha`) SHA 태그를 PR 출발 저장소(원본 또는 fork)에서 읽습니다.
+- `master`에 직접 푸시하면 푸시의 마지막 커밋 SHA로 만든 `changes/<SHA>` 태그를 원본 저장소에서 읽습니다.
+- PR을 병합하면 병합 결과가 아니라 PR의 마지막 커밋(`head.sha`)로 만든 `changes/<SHA>` 태그를 PR 출발 저장소(원본 또는 fork)에서 읽습니다.
 
 푸시하거나 PR을 병합하기 전에 태그를 출발 저장소에 올려 두어야 합니다.
 
 ```shell
-git tag -a "$(git rev-parse HEAD)" -F CHANGELOG.md
-git push origin "$(git rev-parse HEAD)"
+git tag -a "changes/$(git rev-parse HEAD)" -F CHANGELOG.md
+git push origin "changes/$(git rev-parse HEAD)"
 ```
