@@ -52,6 +52,7 @@ def python_in(directory: Path) -> str:
 			'--python',
 			python,
 			'install',
+			'--upgrade',
 			'pip>=23',
 		],
 		directory,
