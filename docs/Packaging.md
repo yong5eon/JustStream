@@ -70,3 +70,17 @@ python -m twine check --strict dist/*
 sdist는 공통 소스 트리를 포함합니다. 선택하지 않은 구현체의 파일을 제외하는 경계는 빌드된 wheel과 최종 설치 파일이며, sdist 원본 소스의 배포까지 분리하는 구조는 아닙니다.
 
 CI는 지원 Python별 빌드·설치 격리를 검사하며, 릴리즈에서 이름·버전·빌드 번호를 확인하고 구현체를 먼저, 코어를 나중에 게시합니다. PyPI 게시 권한과 토큰은 세 배포 이름을 지원해야 합니다. 로컬 빌드만으로 게시하지는 않습니다.
+
+### 릴리스 노트용 태그
+
+새 공개 버전을 배포하면 GitHub Release 본문으로 커밋 SHA와 같은 이름의 annotated tag 메시지를 사용합니다. 접두사 없이 전체 SHA를 태그 이름으로 쓰며, 태그가 없거나 lightweight tag이거나 메시지가 비어 있으면 릴리스가 실패합니다. 같은 공개 버전의 wheel만 다시 빌드할 때는 기존 릴리스 노트를 재사용하므로 태그가 필요하지 않습니다.
+
+- `master`에 직접 푸시하면 푸시의 마지막 커밋 SHA 태그를 원본 저장소에서 읽습니다.
+- PR을 병합하면 병합 결과가 아니라 PR의 마지막 커밋(`head.sha`) SHA 태그를 PR 출발 저장소(원본 또는 fork)에서 읽습니다.
+
+푸시하거나 PR을 병합하기 전에 태그를 출발 저장소에 올려 두어야 합니다.
+
+```shell
+git tag -a "$(git rev-parse HEAD)" -F CHANGELOG.md
+git push origin "$(git rev-parse HEAD)"
+```

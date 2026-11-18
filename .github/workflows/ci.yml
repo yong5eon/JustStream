@@ -102,7 +102,6 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           GH_TOKEN: ${{ github.token }}
-          BEFORE: ${{ github.event.before }}
           NEW_VERSION: ${{ steps.changes.outputs.new_version }}
           RELEASE_TAG: ${{ steps.changes.outputs.tag }}
         run: |
@@ -110,66 +109,59 @@ jobs:
           from json import loads
           from os import environ
           from pathlib import Path
-          from re import fullmatch, match
-          from subprocess import check_output
+          from subprocess import CalledProcessError, check_output
 
           head = environ['GITHUB_SHA']
           repository = environ['GITHUB_REPOSITORY']
-          pages = loads(check_output([
-              'gh', 'api', '--paginate', '--slurp',
-              f'repos/{repository}/commits/{head}/pulls?per_page=100',
-          ]))
-          pulls = [
-              pull for page in pages for pull in page
-              if pull['merged_at'] is not None
-              and pull['merge_commit_sha'] == head
-              and pull['base']['ref'] == 'master'
-              and pull['base']['repo']['full_name'] == repository
-          ]
-          if len(pulls) > 1:
-              raise ValueError('Multiple merged PRs found for the release commit')
           if environ['NEW_VERSION'] == 'false':
               tag = environ['RELEASE_TAG']
               release = loads(check_output([
-                  'gh', 'api', f'repos/{environ["GITHUB_REPOSITORY"]}/releases/tags/{tag}',
+                  'gh', 'api', f'repos/{repository}/releases/tags/{tag}',
               ]))
               if release['tag_name'] != tag or not release.get('body', '').strip():
                   raise ValueError(f'Existing release notes are missing or empty: {tag}')
               body = release['body'].encode('utf-8')
               print(f'Reusing release notes unchanged: {tag}')
-          elif not pulls:
-              before = environ['BEFORE']
-              if not before:
-                  raise ValueError('Missing push base commit')
-              revision = head if set(before) == {'0'} else f'{before}..{head}'
-              commits = check_output(['git', 'log', '--reverse', '--format=- %s (%h)', revision])
-              body = '## master 직접 push\n\n'.encode('utf-8') + commits
-              print('Direct master push: generating release notes from commits')
           else:
-              branch = pulls[0]['head']['ref']
-              pr_body = pulls[0].get('body')
-              if pr_body is not None and not isinstance(pr_body, str):
-                  raise ValueError('PR body must be text')
-              lines = [line for line in (pr_body or '').splitlines() if line.strip()]
-              last = lines[-1] if lines else ''
-              marker = r'^(?:[-*]\s*Changes\b|Changes:)'
-              if not last.startswith(('    ', '\t')) and match(marker, last.strip()):
-                  entry_match = fullmatch(
-                      r'- Changes: ((?:issues/(?:bug|fix|feature|task)/[A-Za-z0-9][A-Za-z0-9._-]*|tasks/[0-9]+)/CHANGELOG\.md)',
-                      last.rstrip(),
-                  )
-                  if not entry_match:
-                      raise ValueError(f'Invalid Changes entry: {last.strip()}')
-                  path = entry_match[1]
+              pages = loads(check_output([
+                  'gh', 'api', '--paginate', '--slurp',
+                  f'repos/{repository}/commits/{head}/pulls?per_page=100',
+              ]))
+              pulls = [
+                  pull for page in pages for pull in page
+                  if pull['merged_at'] is not None
+                  and pull['merge_commit_sha'] == head
+                  and pull['base']['ref'] == 'master'
+                  and pull['base']['repo']['full_name'] == repository
+              ]
+              if len(pulls) > 1:
+                  raise ValueError('Multiple merged PRs found for the release commit')
+              if pulls:
+                  source = pulls[0]['head']
+                  sha = source['sha']
+                  if source.get('repo') is None:
+                      raise ValueError(f'PR head repository is unavailable for tag {sha}')
+                  source_repository = source['repo']['full_name']
               else:
-                  path = f'issues/{branch}/CHANGELOG.md'
-              entry = check_output(['git', 'ls-tree', head, '--', path]).decode().split()
-              if not entry or entry[0] not in ('100644', '100755'):
-                  raise ValueError(f'Changelog must exist as a regular file: {path}')
-              body = check_output(['git', 'show', f'{head}:{path}'])
-              if not body.decode('utf-8').strip():
-                  raise ValueError(f'Customer changelog is empty: {path}')
-              print(f'Customer changelog: {path}')
+                  sha = head
+                  source_repository = repository
+              where = f'tag {sha} in {source_repository}'
+              try:
+                  ref = loads(check_output([
+                      'gh', 'api', f'repos/{source_repository}/git/ref/tags/{sha}',
+                  ]))
+              except CalledProcessError as error:
+                  raise ValueError(f'Release notes tag not found: {where}') from error
+              if ref['object']['type'] != 'tag':
+                  raise ValueError(f'Release notes tag must be an annotated tag: {where}')
+              annotated = loads(check_output([
+                  'gh', 'api', f'repos/{source_repository}/git/tags/{ref["object"]["sha"]}',
+              ]))
+              message = annotated.get('message') or ''
+              if not message.strip():
+                  raise ValueError(f'Release notes tag message is empty: {where}')
+              body = message.encode('utf-8')
+              print(f'Release notes: annotated {where}')
           notes = Path(environ['RUNNER_TEMP'], 'release-notes', 'README.md')
           notes.parent.mkdir(parents=True, exist_ok=True)
           notes.write_bytes(body)
