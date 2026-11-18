@@ -71,14 +71,28 @@ Sdists contain the shared source tree. Unselected implementation files are exclu
 
 CI checks build and installation isolation on supported Python versions. Releases verify names, versions and build numbers, then publish implementations before the core. PyPI publishing permissions and the token must cover all three names. Local builds do not publish anything.
 
+### Public version decision
+
+A change that reaches `master` and passes verification is published to PyPI, whether it is a direct push or a merged PR. The public version (`MAJOR.MINOR.PATCH`) comes from the issues linked to the merged PR (those GitHub recognizes, such as `Closes #N`), not from changed file paths. The issue type is used when present; labels are used only when the issue has no type.
+
+| Issue type | Label when there is no type | Public version |
+| --- | --- | --- |
+| `Feature` | `feature` | Increase `MINOR` and reset `PATCH` to 0 (`0.1.29` → `0.2.0`) |
+| `Bug` | `bug`, `fix` | Increase `PATCH` |
+| `Task` | `task`, any other label, or no label | Keep |
+
+- With several linked issues, each is evaluated and the highest increase (`MINOR` > `PATCH` > keep) is used.
+- A PR without a linked issue and a direct push to `master` keep the public version.
+- The base version is the highest `MAJOR.MINOR.PATCH` tag contained in the commit before the push. After `MINOR` increases, later `PATCH` releases continue in the new `MAJOR.MINOR` series (`0.2.0` → `0.2.1`). `MAJOR` changes are not handled.
+- Keeping the public version publishes only a wheel with a new build number and keeps the existing release notes.
+
 ### Tags for release notes
 
-When a new public version is released, the message of an annotated tag named `changes/<commit SHA>` becomes the GitHub Release body. The `changes/` prefix is required because GitHub rejects tag names that consist only of a full SHA. The release fails if the tag is missing, is a lightweight tag, or has an empty message. Rebuilding only the wheel of an existing public version reuses the existing release notes and needs no tag.
+When the public version increases (a merged PR linked to a `Feature` or `Bug` issue), the message of an annotated tag named `changes/<commit SHA>` becomes the GitHub Release body. The `changes/` prefix is required because GitHub rejects tag names that consist only of a full SHA. The release fails if the tag is missing, is a lightweight tag, or has an empty message. Releases that keep the public version, including direct pushes, reuse the existing release notes and need no tag.
 
-- A direct push to `master` reads the `changes/<SHA>` tag of the last pushed commit from the original repository.
 - A merged PR reads the `changes/<SHA>` tag of the PR's last commit (`head.sha`), not the merge result, from the PR's source repository (original or fork).
 
-Push the tag to the source repository before pushing or merging the PR.
+Push the tag to the source repository before merging the PR.
 
 ```shell
 git tag -a "changes/$(git rev-parse HEAD)" -F CHANGELOG.md

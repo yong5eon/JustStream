@@ -8,9 +8,6 @@ on:
 permissions:
   contents: read
 
-env:
-  RELEASE_SERIES: '0.1'
-
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
@@ -20,6 +17,7 @@ jobs:
     name: Prepare CI and master release metadata
     permissions:
       contents: read
+      issues: read
       pull-requests: read
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -29,6 +27,8 @@ jobs:
       build: ${{ steps.changes.outputs.build }}
       new_version: ${{ steps.changes.outputs.new_version }}
       tag: ${{ steps.changes.outputs.tag }}
+      head_sha: ${{ steps.changes.outputs.head_sha }}
+      head_repository: ${{ steps.changes.outputs.head_repository }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -38,72 +38,21 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: '3.13'
-      - name: Check complete push range and plan version
+      - name: Plan version from linked issues
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         id: changes
         env:
           BEFORE: ${{ github.event.before }}
-        run: |
-          python - <<'PY'
-          from os import environ
-          from pathlib import Path
-          from re import fullmatch
-          from subprocess import check_output
-
-          series = environ['RELEASE_SERIES']
-          if fullmatch(r'(0|[1-9]\d*)\.(0|[1-9]\d*)', series) is None:
-              raise ValueError(f'Invalid RELEASE_SERIES: {series!r}')
-          before = environ['BEFORE']
-          if not before:
-              raise ValueError('Missing push base commit')
-          first_push = set(before) == {'0'}
-          base = check_output(['git', 'hash-object', '-t', 'tree', '--stdin'], input='', text=True).strip() if first_push else before
-          # 재실행 시 이번 실행에서 만든 태그는 제외한다.
-          tags = [] if first_push else check_output(['git', 'tag', '--merged', before], text=True).splitlines()
-          releases = []
-          release_tags = {}
-          for tag in tags:
-              match = fullmatch(r'v?(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?(?:\.post(\d+))?', tag)
-              if match and f'{int(match[1])}.{int(match[2])}' == series:
-                  release = tuple(map(int, match.groups()[:3])) + (
-                      int(match[4] or 0), int(match[5] or 0), match[4] is not None or match[5] is not None,
-                  )
-                  releases.append(release)
-                  release_tags[release] = tag
-          latest = max(releases) if releases else None
-          if latest is not None:
-              base = release_tags[latest]
-          changed = check_output(
-              [
-                  'git', 'diff', '--name-only', '--no-renames', base, environ['GITHUB_SHA'],
-                  '--', 'src/', 'setup.py', 'setup.cfg', 'pyproject.toml', 'MANIFEST.in', '.dev/scripts/', '.github/scripts/*.py',
-              ],
-              text=True,
-          ).strip()
-          number = int(environ['GITHUB_RUN_NUMBER'])
-          if number < 1:
-              raise ValueError('Build number must be positive')
-          migrate = latest is not None and latest[5]
-          new_version = bool(changed) or latest is None or migrate
-          if new_version:
-              patch = latest[2] + 1 if latest is not None else 0
-              print(f'New public version: source/packaging changes or initial/migration release\n{changed}')
-          else:
-              patch = latest[2]
-              print('Keeping MAJOR.MINOR.PATCH; publishing a new wheel build')
-          version = f'{series}.{patch}'
-          print(f'Planned version: {version}, wheel build: {number}')
-          with Path(environ['GITHUB_OUTPUT']).open('a', encoding='utf-8') as output:
-              output.write(f'release=true\nversion={version}\n')
-              output.write(f'build={number}\nnew_version={str(new_version).lower()}\n')
-              output.write(f'tag={version if new_version else release_tags[latest]}\n')
-          PY
+          GH_TOKEN: ${{ github.token }}
+        run: python .github/scripts/plan_release.py
       - name: Collect branch changelog for release
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           GH_TOKEN: ${{ github.token }}
           NEW_VERSION: ${{ steps.changes.outputs.new_version }}
           RELEASE_TAG: ${{ steps.changes.outputs.tag }}
+          HEAD_SHA: ${{ steps.changes.outputs.head_sha }}
+          HEAD_REPOSITORY: ${{ steps.changes.outputs.head_repository }}
         run: |
           python - <<'PY'
           from json import loads
@@ -111,7 +60,6 @@ jobs:
           from pathlib import Path
           from subprocess import CalledProcessError, check_output
 
-          head = environ['GITHUB_SHA']
           repository = environ['GITHUB_REPOSITORY']
           if environ['NEW_VERSION'] == 'false':
               tag = environ['RELEASE_TAG']
@@ -123,28 +71,8 @@ jobs:
               body = release['body'].encode('utf-8')
               print(f'Reusing release notes unchanged: {tag}')
           else:
-              pages = loads(check_output([
-                  'gh', 'api', '--paginate', '--slurp',
-                  f'repos/{repository}/commits/{head}/pulls?per_page=100',
-              ]))
-              pulls = [
-                  pull for page in pages for pull in page
-                  if pull['merged_at'] is not None
-                  and pull['merge_commit_sha'] == head
-                  and pull['base']['ref'] == 'master'
-                  and pull['base']['repo']['full_name'] == repository
-              ]
-              if len(pulls) > 1:
-                  raise ValueError('Multiple merged PRs found for the release commit')
-              if pulls:
-                  source = pulls[0]['head']
-                  sha = source['sha']
-                  if source.get('repo') is None:
-                      raise ValueError(f'PR head repository is unavailable for tag {sha}')
-                  source_repository = source['repo']['full_name']
-              else:
-                  sha = head
-                  source_repository = repository
+              sha = environ['HEAD_SHA']
+              source_repository = environ['HEAD_REPOSITORY']
               tag = f'changes/{sha}'
               where = f'tag {tag} in {source_repository}'
               try:
