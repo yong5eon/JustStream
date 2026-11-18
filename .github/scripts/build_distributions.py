@@ -34,6 +34,18 @@ def main() -> None:
 		root=str(ROOT),
 		dist_name=PROJECT,
 		tag_regex=r'^v?(?P<version>[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?(?:(?:rc|\.post)[0-9]+)?)$',
+		# changes/<SHA> 릴리스 노트 태그가 버전 태그로 해석되지 않도록 버전 형태의 태그만 조회
+		git_describe_command=[
+			'git',
+			'describe',
+			'--dirty',
+			'--tags',
+			'--long',
+			'--match',
+			'[0-9]*.[0-9]*',
+			'--match',
+			'v[0-9]*.[0-9]*',
+		],
 	)
 	for target in (
 		'core',
