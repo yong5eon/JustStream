@@ -8,11 +8,11 @@ from logging import (
 )
 from uuid import uuid4
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Event,
 	Timer,
 )
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration,
 	Connection as RabbitConnection,
 	Consumer,
@@ -30,7 +30,7 @@ def main() -> None:
 	))
 	try:
 		con.connect()
-		queue: str = 'defstream-timer-sample-' + uuid4().hex
+		queue: str = 'juststream-timer-sample-' + uuid4().hex
 		con.create_queue(queue)
 		try:
 			def receive(event: Event) -> None:

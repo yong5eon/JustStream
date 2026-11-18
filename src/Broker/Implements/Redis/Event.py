@@ -8,7 +8,7 @@ from typing import (
 from redis import Redis
 from redis.cluster import RedisCluster
 
-from DefStream.Broker.Event import (
+from JustStream.Broker.Event import (
 	Event as BaseEvent,
 	EventErrorPolicy,
 )

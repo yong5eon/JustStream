@@ -13,8 +13,8 @@ RabbitMQ Worker는 소비 장애 복구 중 준비 상태를 해제하므로 Pin
 앞의 `worker.py`에서 `Connection`, `Configuration` import를 그대로 사용합니다.
 
 ```python
-from DefStream.Inspector import Inspector
-from DefStream.Inspector.Extensions import (
+from JustStream.Inspector import Inspector
+from JustStream.Inspector.Extensions import (
   Play,
   Metrics,
   Ping,
@@ -43,7 +43,7 @@ inspector = Inspector(
     Play(
       '/play',
       broker=create_connection,
-      title='DefStream',
+      title='JustStream',
     ),
   ),
 )
@@ -52,7 +52,7 @@ inspector = Inspector(
 | 경로 | 용도 |
 | --- | --- |
 | `/ping` | 구독 준비와 소비자 루프 응답성을 검사. 정상 200, 시작·종료·응답 불가 상태 503 |
-| `/metrics` | `defstream_` 접두사의 Prometheus 지표 |
+| `/metrics` | `juststream_` 접두사의 Prometheus 지표 |
 | `/status` | 처리 성공·실패·처리량·소요 시간. `Metrics` 하나와 함께 등록 |
 | `/asyncapi.json` | 등록 작업의 요청·응답 계약을 AsyncAPI JSON으로 제공 |
 | `/play` | 작업 목록·스키마 조회, JSON 메시지 발행, 지원 브로커의 RPC 실행 |
@@ -86,7 +86,7 @@ flowchart LR
 Inspector 자체는 TLS를 제공하지 않으며 공개 웹 서버가 아닙니다.
 Play의 연결 팩터리는 호출마다 새 연결을 반환해야 하고 Worker 연결을 공유하면 안 됩니다.
 
-Play의 `broker` 인자는 `DefStream.Broker.BrokerFactory` 계약을 사용합니다.
+Play의 `broker` 인자는 `JustStream.Broker.BrokerFactory` 계약을 사용합니다.
 이 계약의 `__call__() -> Connection`은 인자 없이 새 연결을 반환합니다.
 위의 `create_connection` 같은 함수나 람다도 그대로 전달할 수 있으며,
 클래스로 구현할 때는 `BrokerFactory`를 상속하고 `__call__`을 구현할 수 있습니다.
@@ -94,7 +94,7 @@ Play의 `broker` 인자는 `DefStream.Broker.BrokerFactory` 계약을 사용합�
 
 ## 로깅
 
-DefStream은 표준 `logging`으로 기록하며 핸들러·포매터·레벨을 설정하지 않습니다.
+JustStream은 표준 `logging`으로 기록하며 핸들러·포매터·레벨을 설정하지 않습니다.
 애플리케이션에서 필요한 출처만 선택해 출력하세요. 샘플은 `Sample`, `Worker`, `Task`,
 `Broker` 이름 및 그 하위 로거만 출력하며, 샘플의 `print()`는 로그로 대체했습니다.
 Worker의 기존 시작 배너는 로깅 설정과 무관하게 그대로 출력됩니다.
@@ -137,9 +137,9 @@ logger.info('Application started')
 - 정상 메시지별 처리 흐름은 DEBUG, 생명주기는 INFO, 주의할 사건은 WARNING,
   처리 실패는 ERROR로 기록합니다. 본문·결과·인증정보는 기본 로그에 포함하지 않습니다.
 - RabbitMQ와 Redis 브로커 로그는 각각 `Broker.RabbitMQ`와 `Broker.Redis` 이름 계층을
-  사용합니다. 기존 `DefStream.Broker...` 이름으로 구성한 필터·핸들러는 새 이름에 맞춰야 합니다.
+  사용합니다. 기존 `JustStream.Broker...` 이름으로 구성한 필터·핸들러는 새 이름에 맞춰야 합니다.
 - Worker 로그는 `Worker` 및 `Task` 계층을, Inspector 로그는 `Worker.Inspector` 계층을
-  사용합니다. 기존 `DefStream.*` 이름에 의존한 필터·핸들러를 새 이름에 맞춰 갱신하세요.
+  사용합니다. 기존 `JustStream.*` 이름에 의존한 필터·핸들러를 새 이름에 맞춰 갱신하세요.
 - 핸들러가 전혀 없으면 Python의 `lastResort`에 의해 WARNING 이상이 stderr에 나올 수 있습니다.
   사용자 예외 메시지에는 민감한 값을 넣지 마세요. 실패 traceback에 예외 메시지가 포함됩니다.
 
@@ -177,6 +177,6 @@ ProcessPool은 `spawn` 자식 프로세스를 사용하므로 부모의 핸들�
 - [브로커 없이 실행하는 Worker 예제](../samples/Worker/Sample.py)
 - [RabbitMQ Worker·RPC 클라이언트 예제](../samples/Worker/RabbitMQ)
 - [Redis Worker 예제](../samples/Worker/Redis/Sample.py)
-- [릴리즈와 변경 내역](https://github.com/yong5eon/DefStream/releases)
+- [릴리즈와 변경 내역](https://github.com/yong5eon/JustStream/releases)
 
 GNU GPL v3 라이선스를 사용합니다. 자세한 조건은 [LICENSE](../LICENSE)를 확인하세요.

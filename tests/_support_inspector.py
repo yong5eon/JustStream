@@ -11,12 +11,12 @@ from time import (
 from typing import Protocol
 from uuid import uuid4
 
-from DefStream.Inspector import Inspector
-from DefStream.Inspector.Extensions import (
+from JustStream.Inspector import Inspector
+from JustStream.Inspector.Extensions import (
 	Metrics,
 	Ping,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	ProcessPool,
 	Run,
 	ThreadPool,
@@ -123,7 +123,7 @@ class InspectorIntegrationSupport:
 		producer = connection()
 		producer.connect()
 		worker_broker = connection()
-		name = 'defstream-inspector-' + uuid4().hex
+		name = 'juststream-inspector-' + uuid4().hex
 		original = Divide.parameters
 		Divide.parameters = {'queue': name}
 		inspector = Inspector(

@@ -12,19 +12,19 @@ from Tasks import (
 	logger,
 )
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Connection,
 	Configuration,
 )
-from DefStream.Inspector import Inspector
-from DefStream.Inspector.Extensions import (
+from JustStream.Inspector import Inspector
+from JustStream.Inspector.Extensions import (
 	Metrics,
 	Ping,
 	Specifications,
 	Play,
 	Status,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	declare,
 	emit,
 	ProcessPool,
@@ -101,8 +101,8 @@ if __name__ == '__main__':
 				Metrics('/metrics'),
 				Status(
 					'/status',
-					title='DefStream using RabbitMQ Sample',
-					description='A sample DefStream worker using RabbitMQ as the broker',
+					title='JustStream using RabbitMQ Sample',
+					description='A sample JustStream worker using RabbitMQ as the broker',
 				),
 				Specifications('/spec'),
 				Play(
@@ -113,8 +113,8 @@ if __name__ == '__main__':
 						username='guest',
 						password='guest',
 					)),
-					title='DefStream using RabbitMQ Sample',
-					description='A sample DefStream worker using RabbitMQ as the broker',
+					title='JustStream using RabbitMQ Sample',
+					description='A sample JustStream worker using RabbitMQ as the broker',
 				),
 			),
 		),

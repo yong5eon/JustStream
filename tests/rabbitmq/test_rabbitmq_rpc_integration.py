@@ -13,15 +13,15 @@ from unittest import (
 )
 from uuid import uuid4
 
-from DefStream.Broker import RemoteError
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker import RemoteError
+from JustStream.Broker.Implements.RabbitMQ import (
 	Connection,
 	Configuration,
 	ExchangeType,
 	Reject,
 	Subscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	ProcessPool,
 	Run,
 	ThreadPool,
@@ -81,11 +81,11 @@ class RpcIntegrationTests(TestCase):
 				))
 				client.connect()
 				names = [
-					'defstream-rpc-' + uuid4().hex
+					'juststream-rpc-' + uuid4().hex
 					for index in range(3)
 				]
 				channel = require_value(client.connection).channel()
-				exchange = 'defstream-rpc-' + uuid4().hex
+				exchange = 'juststream-rpc-' + uuid4().hex
 				worker = Worker(
 					Connection(client.conf),
 					pool_class(2),
@@ -201,7 +201,7 @@ class RpcIntegrationTests(TestCase):
 							timeout=0.2,
 						)
 					with self.assertRaises(UnroutableError):
-						client.queue('defstream-missing-' + uuid4().hex).call(
+						client.queue('juststream-missing-' + uuid4().hex).call(
 							{},
 							timeout=2,
 						)

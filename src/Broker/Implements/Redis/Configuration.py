@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from DefStream.Broker import Configuration as BaseConfiguration
+from JustStream.Broker import Configuration as BaseConfiguration
 from .Serializer import (
 	Decoder,
 	Encoder,

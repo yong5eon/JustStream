@@ -4,11 +4,11 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
 	Configuration,
 	Connection,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Run,
 	declare,
 	emit,

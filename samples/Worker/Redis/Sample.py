@@ -11,21 +11,21 @@ from signal import (
 	signal,
 )
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
 	Connection,
 	Configuration,
 	Reject,
 	Subscription,
 )
-from DefStream.Inspector import Inspector
-from DefStream.Inspector.Extensions import (
+from JustStream.Inspector import Inspector
+from JustStream.Inspector.Extensions import (
 	Metrics,
 	Ping,
 	Specifications,
 	Play,
 	Status,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	declare,
 	emit,
 	Run,
@@ -162,15 +162,15 @@ def main() -> None:
 				Metrics('/metrics'),
 				Status(
 					'/status',
-					title='DefStream using Redis Sample',
-					description='A sample DefStream worker using Redis as the broker',
+					title='JustStream using Redis Sample',
+					description='A sample JustStream worker using Redis as the broker',
 				),
 				Specifications('/spec'),
 				Play(
 					'/play',
 					broker=lambda: Connection(Configuration()),
-					title='DefStream using Redis Sample',
-					description='A sample DefStream worker using Redis as the broker',
+					title='JustStream using Redis Sample',
+					description='A sample JustStream worker using Redis as the broker',
 				),
 			),
 		),

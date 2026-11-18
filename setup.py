@@ -13,7 +13,7 @@ from setuptools.command.build import build
 from setuptools.command.egg_info import egg_info
 from setuptools.command.sdist import sdist
 
-PACKAGE = 'DefStream'
+PACKAGE = 'JustStream'
 SOURCE = 'src'
 IMPLEMENTATIONS = {
 	'RabbitMQ': 'Broker.Implements.RabbitMQ',
@@ -164,11 +164,11 @@ setup(
 	long_description=Path('README.setup.md').read_text(encoding='utf-8'),
 	long_description_content_type='text/markdown',
 	author='Heo Yongseon',
-	url='https://github.com/yong5eon/DefStream',
+	url='https://github.com/yong5eon/JustStream',
 	project_urls={
-		'Source': 'https://github.com/yong5eon/DefStream',
-		'Issues': 'https://github.com/yong5eon/DefStream/issues',
-		'Releases': 'https://github.com/yong5eon/DefStream/releases',
+		'Source': 'https://github.com/yong5eon/JustStream',
+		'Issues': 'https://github.com/yong5eon/JustStream/issues',
+		'Releases': 'https://github.com/yong5eon/JustStream/releases',
 	},
 	cmdclass={
 		'build': TargetBuild,
@@ -179,7 +179,7 @@ setup(
 	package_dir=PACKAGE_DIR,
 	include_package_data=False,
 	package_data={
-		'DefStream.Inspector.Extensions': [
+		'JustStream.Inspector.Extensions': [
 			'Play.html',
 			'Status.html',
 		],

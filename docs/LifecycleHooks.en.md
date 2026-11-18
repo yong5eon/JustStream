@@ -2,11 +2,11 @@
 
 [← Guide index](./README.en.md)
 
-DefStream hooks provide initialization, completion, error observation, and cleanup at three scopes: individual task executions, each execution-pool thread or process, and the Worker. This guide covers their locations, order, failure behavior, and resource ownership.
+JustStream hooks provide initialization, completion, error observation, and cleanup at three scopes: individual task executions, each execution-pool thread or process, and the Worker. This guide covers their locations, order, failure behavior, and resource ownership.
 
 ## Hook types and contracts
 
-All hook interfaces are available from `DefStream.Worker`. Each hook option accepts one callable or an ordered sequence of callables.
+All hook interfaces are available from `JustStream.Worker`. Each hook option accepts one callable or an ordered sequence of callables.
 
 | Scope | Hook | Invocation | Arguments |
 | --- | --- | --- | --- |
@@ -25,13 +25,13 @@ RabbitMQ consumption recovery preserves the Pool object and replaces its interna
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
   Configuration,
   Connection,
   Reject,
   Subscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
   Context,
   PoolCleanup,
   PoolSetup,
@@ -85,7 +85,7 @@ class ReleaseWorker(WorkerCleanup):
 
 class Add(
   Run,
-  parameters=Subscription(queue='defstream.example.lifecycle'),
+  parameters=Subscription(queue='juststream.example.lifecycle'),
   on_error=Reject(),
   setups=TraceRunSetup(),
   completes=TraceRunComplete(),

@@ -1,9 +1,9 @@
 ---
-description: "DefStream 상세 매뉴얼 작성 지침"
+description: "JustStream 상세 매뉴얼 작성 지침"
 applyTo: "docs/**/*.md"
 ---
 
-# DefStream 상세 매뉴얼 작성 지침
+# JustStream 상세 매뉴얼 작성 지침
 
 ## 디렉터리와 진입 문서
 
@@ -30,7 +30,7 @@ applyTo: "docs/**/*.md"
 
 ## 기술 내용의 정확성
 
-- 내용은 DefStream의 공개 API, 구현된 동작과 지원되는 설정에 근거한다.
+- 내용은 JustStream의 공개 API, 구현된 동작과 지원되는 설정에 근거한다.
 - 작업 정의, 구독·ACK·실패 처리, 실행 풀과 종료, 생명주기 훅, 요청·응답 계약, Inspector, 로깅, RabbitMQ 및 Redis Streams 안내는 해당 기능의 실제 계약을 확인해 작성한다.
 - 설정 예시와 코드 샘플은 현재 API와 호환되어야 한다. 외부 브로커나 서비스가 필요한 절차에는 요구 사항과 실행 조건을 설명한다.
 - 지원 여부가 확인되지 않은 기능, 보장되지 않는 동작, 실제 수행하지 않은 검증을 사실처럼 작성하지 않는다.

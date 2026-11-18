@@ -9,26 +9,26 @@
 Python **3.9 이상**이 필요합니다. 실제 메시지 처리를 위해 사용할 브로커 서버도 준비하세요.
 
 ```shell
-python -m pip install "DefStream[RabbitMQ]"
+python -m pip install "JustStream[RabbitMQ]"
 ```
 
 Redis를 사용하거나 두 어댑터를 모두 설치하려면 다음과 같이 선택합니다.
 
 ```shell
-python -m pip install "DefStream[Redis]"
-python -m pip install "DefStream[RabbitMQ,Redis]"
+python -m pip install "JustStream[Redis]"
+python -m pip install "JustStream[RabbitMQ,Redis]"
 ```
 
-코어만 필요하면 `python -m pip install DefStream`을 사용합니다.
+코어만 필요하면 `python -m pip install JustStream`을 사용합니다.
 기본 설치에는 브로커 구현체와 클라이언트가 모두 포함되지 않습니다.
-`RabbitMQ` extra는 동일 버전 `DefStream-RabbitMQ`와 `pika>=1.3.2`를,
-`Redis` extra는 동일 버전 `DefStream-Redis`와 `redis>=5.1.1`을 설치합니다.
+`RabbitMQ` extra는 동일 버전 `JustStream-RabbitMQ`와 `pika>=1.3.2`를,
+`Redis` extra는 동일 버전 `JustStream-Redis`와 `redis>=5.1.1`을 설치합니다.
 
 | 선택 설치 | Python import 경로 | 사용 안내 |
 | --- | --- | --- |
-| `DefStream` | `DefStream` | 이 문서 |
-| `DefStream[RabbitMQ]` | `DefStream.Broker.Implements.RabbitMQ` | [RabbitMQ 사용 방법](./RabbitMQ.md#rabbitmq-사용-방법) |
-| `DefStream[Redis]` | `DefStream.Broker.Implements.Redis` | [Redis 사용 방법](./Redis.md#redis-사용-방법) |
+| `JustStream` | `JustStream` | 이 문서 |
+| `JustStream[RabbitMQ]` | `JustStream.Broker.Implements.RabbitMQ` | [RabbitMQ 사용 방법](./RabbitMQ.md#rabbitmq-사용-방법) |
+| `JustStream[Redis]` | `JustStream.Broker.Implements.Redis` | [Redis 사용 방법](./Redis.md#redis-사용-방법) |
 
 코어와 구현체는 같은 저장소에서 함께 빌드·버전 관리하지만 별도 배포물로 설치됩니다.
 소스 코드를 수정하고 싶다면 [설치 격리와 개발·배포](./Packaging.md)를 참고하세요.
@@ -43,16 +43,16 @@ python -m pip install "DefStream[RabbitMQ,Redis]"
 ### 1. 작업 정의: `tasks.py`
 
 ```python
-from DefStream.Broker.Implements.RabbitMQ import Reject, Subscription
-from DefStream.Worker import Run
+from JustStream.Broker.Implements.RabbitMQ import Reject, Subscription
+from JustStream.Worker import Run
 
 
 class Add(
   Run,
   parameters=Subscription(
-    queue='defstream.example.add',
+    queue='juststream.example.add',
     qos=4,
-    error='defstream.example.add.error',
+    error='juststream.example.add.error',
   ),
   on_error=Reject(),
 ):
@@ -72,7 +72,7 @@ class Add(
 
 ### 2. Worker 실행: `worker.py`
 
-`Worker`는 `DefStream.Broker.Connection`을 직접 받습니다.
+`Worker`는 `JustStream.Broker.Connection`을 직접 받습니다.
 연결 계약은 `connect()`, `close()`만 요구하며, 워커 실행 시 내부에서
 `GetConsumer` 지원 여부를 검사합니다. 컨슈머를 생성할 수 없는 브로커는 `TypeError`를 발생시키며,
 워커 전용 연결 타입은 필요하지 않습니다.
@@ -80,8 +80,8 @@ class Add(
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection
-from DefStream.Worker import ThreadPool, Worker, WorkerSetup, declare
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
+from JustStream.Worker import ThreadPool, Worker, WorkerSetup, declare
 from tasks import Add
 
 
@@ -143,8 +143,8 @@ sequenceDiagram
 Worker가 실행 중인 상태에서 다른 터미널에서 실행하세요.
 
 ```python
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection
-from DefStream.Worker import emit, request
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
+from JustStream.Worker import emit, request
 from tasks import Add
 
 

@@ -14,7 +14,7 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Connection,
 	BrokerFactory,
 	Timer,
@@ -31,21 +31,21 @@ from DefStream.Broker import (
 	Requestable,
 	Recoverable,
 )
-from DefStream.Broker import __all__ as broker_exports
-from DefStream.Broker.Connection import (
+from JustStream.Broker import __all__ as broker_exports
+from JustStream.Broker.Connection import (
 	Timer as ConnectionTimer,
 	TimerCallback as ConnectionTimerCallback,
 	SetTimer as ConnectionSetTimer,
 	__all__ as connection_exports,
 )
-from DefStream.Inspector.Extensions import Play
-from DefStream.Broker.Implements.RabbitMQ import __all__ as rabbit_exports
-from DefStream.Broker.Implements.Redis import __all__ as redis_exports
-from DefStream.Broker.Event import (
+from JustStream.Inspector.Extensions import Play
+from JustStream.Broker.Implements.RabbitMQ import __all__ as rabbit_exports
+from JustStream.Broker.Implements.Redis import __all__ as redis_exports
+from JustStream.Broker.Event import (
 	EventErrorPolicy,
 	EventHandler,
 )
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration as RabbitConfiguration,
 	Consumer as RabbitConsumer,
 	Connection as RabbitConnection,
@@ -54,8 +54,8 @@ from DefStream.Broker.Implements.RabbitMQ import (
 	Reject as RabbitReject,
 	Requeue as RabbitRequeue,
 )
-from DefStream.Broker.Implements.RabbitMQ.Consumer import FailedRequest
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.RabbitMQ.Consumer import FailedRequest
+from JustStream.Broker.Implements.Redis import (
 	Configuration as RedisConfiguration,
 	Consumer as RedisConsumer,
 	Connection as RedisConnection,
@@ -64,17 +64,17 @@ from DefStream.Broker.Implements.Redis import (
 	Reject as RedisReject,
 	Requeue as RedisRequeue,
 )
-from DefStream.Broker.Implements.Redis.Serializer import (
+from JustStream.Broker.Implements.Redis.Serializer import (
 	Decoder,
 	Encoder,
 	JavaScriptObjectNotationDecoder,
 	JavaScriptObjectNotationEncoder,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Run,
 	Worker,
 )
-from DefStream.Worker import __all__ as worker_exports
+from JustStream.Worker import __all__ as worker_exports
 from tests._support import call_with_invalid_input
 
 
@@ -217,7 +217,7 @@ class ProtocolContractTests(TestCase):
 		return
 
 	def test_broker_factory_contract_and_play_annotation(self):
-		from DefStream.Broker.Connection import BrokerFactory as FactoryContract
+		from JustStream.Broker.Connection import BrokerFactory as FactoryContract
 
 		self.assertIs(
 			BrokerFactory,
@@ -328,8 +328,8 @@ class ProtocolContractTests(TestCase):
 		return
 
 	def test_event_handler_protocol_and_public_exports(self):
-		from DefStream.Broker import EventHandler as PublicEventHandler
-		from DefStream.Broker.Implements.Redis import EventHandler as RedisEventHandler
+		from JustStream.Broker import EventHandler as PublicEventHandler
+		from JustStream.Broker.Implements.Redis import EventHandler as RedisEventHandler
 
 		self.assertIs(
 			PublicEventHandler,

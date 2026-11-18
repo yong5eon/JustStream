@@ -5,8 +5,8 @@ from unittest import (
 from unittest.mock import Mock
 from unittest.mock import call
 
-from DefStream.Broker import Event as BaseEvent
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker import Event as BaseEvent
+from JustStream.Broker.Implements.RabbitMQ import (
 	Consumer,
 	Event,
 	Requeue,

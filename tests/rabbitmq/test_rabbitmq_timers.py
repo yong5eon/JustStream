@@ -24,12 +24,12 @@ from uuid import uuid4
 
 from pika import BlockingConnection
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Event,
 	Timer,
 	TimerCallback,
 )
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration,
 	Connection,
 	Consumer,
@@ -171,7 +171,7 @@ class TimerTests(TestCase):
 
 		consumer.run.side_effect = consume
 		path: Path = Path(__file__).resolve().parents[2] / 'samples' / 'Broker' / 'RabbitMQ' / 'Sample.Timer.py'
-		with patch('DefStream.Broker.Implements.RabbitMQ.Connection', return_value=broker):
+		with patch('JustStream.Broker.Implements.RabbitMQ.Connection', return_value=broker):
 			namespace: Dict[str, Any] = run_path(str(path), run_name='sample_import_test')
 			namespace['main']()
 		self.assertEqual(broker.set_timer.call_count, 4)
@@ -202,7 +202,7 @@ class RabbitMQTimerIntegrationTests(TestCase):
 		self.broker.parameters.stack_timeout = 3
 		self.addCleanup(self.broker.close)
 		self.broker.connect()
-		queue: str = 'defstream-timer-test-' + uuid4().hex
+		queue: str = 'juststream-timer-test-' + uuid4().hex
 		self.broker.create_queue(queue)
 		self.addCleanup(self.broker.delete_queue, queue)
 		self.consumer: Consumer = self.broker.consumer()

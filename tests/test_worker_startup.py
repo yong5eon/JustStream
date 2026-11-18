@@ -6,22 +6,22 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Configuration as RabbitConfiguration,
 	Connection as RabbitConnection,
 	Reject,
 	Subscription as RabbitSubscription,
 )
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
 	Configuration as RedisConfiguration,
 	Connection as RedisConnection,
 	Subscription as RedisSubscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	Run,
 	Worker,
 )
-from DefStream.Worker.Startup import (
+from JustStream.Worker.Startup import (
 	LOGO,
 	startup,
 )
@@ -327,7 +327,7 @@ class StartupTests(TestCase):
 				for hidden in (
 					'private-user',
 					'private-password',
-					'DefStream.Broker.Implements',
+					'JustStream.Broker.Implements',
 					'    HOST:',
 					'    PORT:',
 					'VHOST:',

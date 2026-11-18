@@ -8,9 +8,9 @@ from typing import Optional
 from unittest.mock import Mock
 from uuid import uuid4
 
-from DefStream.Inspector import Inspector
-from DefStream.Inspector.Extensions import Play
-from DefStream.Worker import (
+from JustStream.Inspector import Inspector
+from JustStream.Inspector.Extensions import Play
+from JustStream.Worker import (
 	Run,
 	Specification,
 	ThreadPool,
@@ -180,7 +180,7 @@ class PlayExtensionSupport:
 	):
 		class Live(
 			Task,
-			parameters={'queue': 'defstream-test-ui-' + uuid4().hex},
+			parameters={'queue': 'juststream-test-ui-' + uuid4().hex},
 		):
 			pass
 

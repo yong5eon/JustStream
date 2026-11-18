@@ -4,13 +4,13 @@
 
 ## 무엇이 설치되는가
 
-`DefStream` 코어에는 브로커 구현체가 없습니다. `RabbitMQ`와 `Redis` extras는 각각 동일 버전 `DefStream-RabbitMQ`, `DefStream-Redis` 배포물과 외부 클라이언트를 설치합니다. 기존 Python import 경로는 유지합니다.
+`JustStream` 코어에는 브로커 구현체가 없습니다. `RabbitMQ`와 `Redis` extras는 각각 동일 버전 `JustStream-RabbitMQ`, `JustStream-Redis` 배포물과 외부 클라이언트를 설치합니다. 기존 Python import 경로는 유지합니다.
 
 새 환경에서는 선택하지 않은 구현체 파일과 클라이언트가 설치되지 않습니다. 나중에 extra를 생략해도 이미 설치한 구현체는 제거되지 않으므로 필요 없다면 해당 구현체 배포물을 명시적으로 제거하세요.
 
 ```mermaid
 flowchart LR
-  A["DefStream[Redis] 설치"] --> B["코어"]
+  A["JustStream[Redis] 설치"] --> B["코어"]
   A --> C["동일 버전 Redis 구현체"]
   C --> D["redis 클라이언트"]
 ```
@@ -32,7 +32,7 @@ python -m pip install -e ".[Redis]"
 python -m pip install -e ".[RabbitMQ,Redis]"
 ```
 
-선택한 extra는 같은 버전의 `DefStream-RabbitMQ` 또는 `DefStream-Redis` wheel과 외부 클라이언트를 설치합니다. editable로 연결되는 것은 저장소의 코어 소스입니다. 다른 extra로 다시 설치해도 pip가 기존 구현체 배포물을 자동으로 제거하지는 않습니다. 필요 없는 구현체는 해당 배포물을 명시적으로 제거하세요.
+선택한 extra는 같은 버전의 `JustStream-RabbitMQ` 또는 `JustStream-Redis` wheel과 외부 클라이언트를 설치합니다. editable로 연결되는 것은 저장소의 코어 소스입니다. 다른 extra로 다시 설치해도 pip가 기존 구현체 배포물을 자동으로 제거하지는 않습니다. 필요 없는 구현체는 해당 배포물을 명시적으로 제거하세요.
 
 ### 수정한 코드 확인하기
 

@@ -6,10 +6,10 @@ RabbitMQ 연결, 큐·Exchange, Worker와 RPC 사용법입니다.
 
 ## Worker 소비 장애 복구
 
-Worker는 RabbitMQ 소비 연결·채널 장애 후 같은 프로세스 안에서 실행기와 연결을 복구합니다. 별도 supervisor는 필요하지 않습니다. 다음은 이미 구성한 `broker`와 DefStream `ThreadPool` 또는 `ProcessPool`인 `pool`을 사용하는 생성자 설정 발췌입니다.
+Worker는 RabbitMQ 소비 연결·채널 장애 후 같은 프로세스 안에서 실행기와 연결을 복구합니다. 별도 supervisor는 필요하지 않습니다. 다음은 이미 구성한 `broker`와 JustStream `ThreadPool` 또는 `ProcessPool`인 `pool`을 사용하는 생성자 설정 발췌입니다.
 
 ```python
-from DefStream.Worker import Worker
+from JustStream.Worker import Worker
 
 
 worker = Worker(
@@ -56,10 +56,10 @@ Python 3.9 이상과 접속 가능한 RabbitMQ 서버가 필요하며 Pika를 �
 
 로컬 RabbitMQ의 `guest` 계정을 사용하는 예제입니다.
 운영에서는 별도 계정과 환경변수·비밀 저장소를 사용하세요.
-예제는 `defstream.example.rabbitmq` 큐를 만들며 실행 후에도 큐를 유지합니다.
+예제는 `juststream.example.rabbitmq` 큐를 만들며 실행 후에도 큐를 유지합니다.
 
 ```python
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
 
 
 connection = Connection(Configuration(
@@ -70,9 +70,9 @@ connection = Connection(Configuration(
 ))
 try:
   connection.connect()
-  connection.create_queue('defstream.example.rabbitmq')
-  queue = connection.queue('defstream.example.rabbitmq')
-  queue.send({'message': 'Hello, DefStream!'})
+  connection.create_queue('juststream.example.rabbitmq')
+  queue = connection.queue('juststream.example.rabbitmq')
+  queue.send({'message': 'Hello, JustStream!'})
   event = queue.pop(timeout=1000)
   if event is not None:
     print(event.body)
@@ -112,12 +112,12 @@ RabbitMQ 연결은 선택적 `SetTimer` 프로토콜을 지원합니다.
 기본 `Connection` 계약과 Redis 연결에는 타이머 지원이 강제되지 않습니다.
 
 다음 예제는 메시지가 없는 큐를 소비하면서 5초 뒤 콜백으로 소비를 중단합니다.
-로컬 RabbitMQ가 필요하며 `defstream.example.timer` 큐는 실행 후에도 유지합니다.
+로컬 RabbitMQ가 필요하며 `juststream.example.timer` 큐는 실행 후에도 유지합니다.
 다른 생산자가 이 큐에 보낸 메시지는 출력한 뒤 ACK합니다.
 
 ```python
-from DefStream.Broker import Event, SetTimer
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection
+from JustStream.Broker import Event, SetTimer
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
 
 
 def receive(event: Event) -> None:
@@ -135,9 +135,9 @@ try:
   connection.connect()
   if not isinstance(connection, SetTimer):
     raise TypeError('Connection does not support timers')
-  connection.create_queue('defstream.example.timer')
+  connection.create_queue('juststream.example.timer')
   consumer = connection.consumer()
-  consumer.subs('defstream.example.timer', receive)
+  consumer.subs('juststream.example.timer', receive)
 
   def expired() -> None:
     print('Timer fired')
@@ -165,7 +165,7 @@ finally:
 5초 간격으로 세 번 실행하고 중단하며, 취소할 때 사용할 최신 핸들을 보관합니다.
 
 ```python
-from DefStream.Broker import Consumer, SetTimer, Timer
+from JustStream.Broker import Consumer, SetTimer, Timer
 
 
 def run_repeated(connection: SetTimer, consumer: Consumer) -> None:
@@ -210,11 +210,11 @@ Consumer 종료 시 연결 타이머를 자동으로 취소하지 않으므로,
 
 여섯 클래스는 `Broker.RabbitMQ.ClassName` 이름의 클래스 멤버
 `logger`를 사용합니다(`Connection`, `Consumer`, `Queue`, `Exchange`, `Stream`, `Event`).
-로거 이름은 모듈 경로(`DefStream.Broker.Implements.RabbitMQ`)와 다릅니다.
+로거 이름은 모듈 경로(`JustStream.Broker.Implements.RabbitMQ`)와 다릅니다.
 하위 클래스는 같은 로거를 상속하며 필요하면 멤버를 재정의할 수 있습니다.
 라이브러리는 핸들러·`NullHandler`·레벨·필터를 설정하지 않고 루트로 전파합니다.
 미설정 시 표준 `logging.lastResort` 동작을 유지합니다.
-기존 `DefStream.Broker.RabbitMQ` 이름으로 필터나 핸들러를 설정했다면
+기존 `JustStream.Broker.RabbitMQ` 이름으로 필터나 핸들러를 설정했다면
 `Broker.RabbitMQ`로 갱신하세요.
 
 RabbitMQ 구현은 정상 동작을 INFO로 기록하지 않습니다.
@@ -230,8 +230,8 @@ RPC 시간 초과·원격 오류·응답 라우팅 불가는 WARNING, 연결·�
 `samples/Broker/RabbitMQ/*.py`는 실행 진입점에서만 루트 DEBUG 콘솔 출력을 구성합니다.
 핸들러의 `Filter('Sample')` 또는 `Filter('Broker.RabbitMQ')`
 통과 조건으로 두 이름과 점으로 구분된 하위 로거만 출력하며 Pika·코어 등은 제외합니다.
-브로커 로거는 `DefStream` 계층 밖에 있으므로 다른 애플리케이션에서는 `Broker`,
-`Broker.RabbitMQ` 또는 클래스 이름으로 선택하세요. `DefStream`은 Worker 등
+브로커 로거는 `JustStream` 계층 밖에 있으므로 다른 애플리케이션에서는 `Broker`,
+`Broker.RabbitMQ` 또는 클래스 이름으로 선택하세요. `JustStream`은 Worker 등
 코어 로거를 선택할 때 사용합니다.
 
 ### Worker로 작업 처리하기
@@ -241,21 +241,21 @@ RPC 시간 초과·원격 오류·응답 라우팅 불가는 WARNING, 연결·�
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
   Configuration,
   Connection,
   Reject,
   Subscription,
 )
-from DefStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(
   Run,
   parameters=Subscription(
-    queue='defstream.example.rabbitmq.add',
+    queue='juststream.example.rabbitmq.add',
     qos=4,
-    error='defstream.example.rabbitmq.add.error',
+    error='juststream.example.rabbitmq.add.error',
   ),
   on_error=Reject(),
 ):
@@ -334,8 +334,8 @@ from datetime import timedelta
 class LongRunningAdd(
   Add,
   parameters=Subscription(
-    queue='defstream.example.rabbitmq.long.add',
-    error='defstream.example.rabbitmq.long.add.error',
+    queue='juststream.example.rabbitmq.long.add',
+    error='juststream.example.rabbitmq.long.add.error',
     timeout=timedelta(hours=24),
   ),
 ):
@@ -361,7 +361,7 @@ Mapping으로도 지정할 수 있습니다. 생략 또는 `None`이면 해당 �
 
 ### 워커 작업 우선순위
 
-작업을 발행할 때는 `DefStream.Worker.emit` 또는
+작업을 발행할 때는 `JustStream.Worker.emit` 또는
 `connection.emit(body, parameters)`을 사용합니다. 기존 작업 발행 이름 `send`는
 `emit`입니다.
 큐·Exchange·Stream의 저수준 `send()`와 RPC `call()`은 변경하지 않습니다.
@@ -373,7 +373,7 @@ Mapping으로도 지정할 수 있습니다. 생략 또는 `None`이면 해당 �
 class PriorityAdd(
   Add,
   parameters=Subscription(
-    queue='defstream.example.rabbitmq.priority.add',
+    queue='juststream.example.rabbitmq.priority.add',
     qos=1,
     max_priority=5,
     priority=2,
@@ -409,7 +409,7 @@ class PriorityAdd(
 아래 코드는 앞의 직접 연결 예제에서 `connect()`와 `close()` 사이에 사용하세요.
 
 ```python
-result = connection.queue('defstream.example.rabbitmq.add').call(
+result = connection.queue('juststream.example.rabbitmq.add').call(
   {'a': 10, 'b': 20},
   timeout=5,
 )
@@ -420,7 +420,7 @@ print(result)
   이미 전달된 서버 작업을 취소하거나 전체 연결·정리 시간을 엄격히 제한하는 값은 아닙니다.
 - 요청 큐 RPC는 전용 연결을 사용하고 `{요청 큐}.{uuid4().hex}` 형식의 임시 응답 큐를 생성합니다.
   큐는 종료 시 정리됩니다. Exchange RPC의 응답 큐 이름은 이 규칙의 영향을 받지 않습니다.
-- 서버가 요청을 거부하면 `DefStream.Broker.RemoteError`가 발생합니다.
+- 서버가 요청을 거부하면 `JustStream.Broker.RemoteError`가 발생합니다.
   재큐잉은 최종 오류 응답 없이 재시도할 수 있습니다.
 - 응답 발행과 요청 ACK는 원자적이지 않습니다. RPC에서도 중복 실행에 대비하세요.
 

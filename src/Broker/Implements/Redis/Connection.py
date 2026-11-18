@@ -8,7 +8,7 @@ from typing import (
 from redis import Redis
 from redis.cluster import RedisCluster
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Connection as BaseConnection,
 	GetQueue,
 	GetStream,
@@ -140,7 +140,7 @@ class Connection(
 	def queue(
 		self,
 		name: str,
-		group: str = 'DefStream',
+		group: str = 'JustStream',
 	) -> Queue:
 		self.logger.debug(
 			'Creating Queue: queue=%s group=%s',
@@ -158,7 +158,7 @@ class Connection(
 	def stream(
 		self,
 		name: str,
-		group: str = 'DefStream',
+		group: str = 'JustStream',
 	) -> Queue:
 		return self.queue(
 			name,
@@ -188,7 +188,7 @@ class Connection(
 	def create_queue(
 		self,
 		name: str,
-		group: str = 'DefStream',
+		group: str = 'JustStream',
 	) -> None:
 		self.logger.debug(
 			'Delegating Consumer Group creation: queue=%s group=%s',
@@ -235,7 +235,7 @@ class Connection(
 	def create_stream(
 		self,
 		name: str,
-		group: str = 'DefStream',
+		group: str = 'JustStream',
 	) -> None:
 		self.create_queue(
 			name,

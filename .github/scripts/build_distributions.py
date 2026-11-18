@@ -4,7 +4,7 @@ from pathlib import Path
 from subprocess import run
 from sys import executable
 
-PROJECT = 'DefStream'
+PROJECT = 'JustStream'
 IMPLEMENTATIONS = {
 	'RabbitMQ': 'Broker.Implements.RabbitMQ',
 	'Redis': 'Broker.Implements.Redis',

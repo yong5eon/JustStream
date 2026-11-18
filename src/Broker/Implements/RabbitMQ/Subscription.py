@@ -6,7 +6,7 @@ from typing import (
 	Optional,
 	Union,
 )
-from DefStream.Broker import validate_priority
+from JustStream.Broker import validate_priority
 
 __all__ = (
 	'Subscription',

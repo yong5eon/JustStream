@@ -13,13 +13,13 @@ from unittest import (
 )
 from uuid import uuid4
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
 	Connection,
 	Configuration,
 	Reject,
 	Subscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	ProcessPool,
 	Run,
 	ThreadPool,
@@ -69,7 +69,7 @@ class RedisIntegrationTests(TestCase):
 		self.names = []
 
 	def queue(self):
-		name = 'defstream-test-' + uuid4().hex
+		name = 'juststream-test-' + uuid4().hex
 		self.names.append(name)
 		self.addCleanup(
 			self.broker.delete_queue,

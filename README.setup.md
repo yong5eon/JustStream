@@ -1,20 +1,20 @@
-# DefStream
+# JustStream
 
 Synchronous event/message processing with pluggable broker adapters
 
-DefStream processes broker messages with ordinary Python task methods and can run them in thread or process pools. It requires Python 3.9 or later.
+JustStream processes broker messages with ordinary Python task methods and can run them in thread or process pools. It requires Python 3.9 or later.
 
 ## Installation
 
 Install the client extra for the broker you use. A broker server must be available separately.
 
 ```shell
-python -m pip install "DefStream[RabbitMQ]"
+python -m pip install "JustStream[RabbitMQ]"
 ```
 
-For Redis Streams, install `DefStream[Redis]`. To install both adapters and clients, use `DefStream[RabbitMQ,Redis]`. The plain `DefStream` installation includes neither broker implementation nor client. Each extra installs a separate, same-version adapter distribution, preserving existing import paths.
+For Redis Streams, install `JustStream[Redis]`. To install both adapters and clients, use `JustStream[RabbitMQ,Redis]`. The plain `JustStream` installation includes neither broker implementation nor client. Each extra installs a separate, same-version adapter distribution, preserving existing import paths.
 
-Before migrating an older integrated installation or historical standalone adapters, uninstall DefStream, DefStream-RabbitMQ and DefStream-Redis, then reinstall with the desired extras. Omitting an extra later does not remove an already installed adapter.
+Before migrating an older integrated installation or historical standalone adapters, uninstall JustStream, JustStream-RabbitMQ and JustStream-Redis, then reinstall with the desired extras. Omitting an extra later does not remove an already installed adapter.
 
 ## Quick start
 
@@ -23,8 +23,8 @@ The following worker listens to a local RabbitMQ server at `127.0.0.1:5672`. The
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection, Reject, Subscription
-from DefStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection, Reject, Subscription
+from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(

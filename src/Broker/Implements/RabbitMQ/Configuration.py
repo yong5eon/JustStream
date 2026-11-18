@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from DefStream.Broker import Configuration as BaseConfiguration
+from JustStream.Broker import Configuration as BaseConfiguration
 
 from .Serializer import (
 	Encoder,

@@ -6,10 +6,10 @@ Connections, queues, exchanges, workers, and RPC.
 
 ## Worker consumption recovery
 
-After a RabbitMQ consumption connection or channel failure, the Worker recovers its executor and connection in the same process, without a separate supervisor. This constructor excerpt uses an already configured `broker` and a DefStream `ThreadPool` or `ProcessPool` named `pool`; it is not a standalone program.
+After a RabbitMQ consumption connection or channel failure, the Worker recovers its executor and connection in the same process, without a separate supervisor. This constructor excerpt uses an already configured `broker` and a JustStream `ThreadPool` or `ProcessPool` named `pool`; it is not a standalone program.
 
 ```python
-from DefStream.Worker import Worker
+from JustStream.Worker import Worker
 
 
 worker = Worker(
@@ -56,10 +56,10 @@ Requires Python 3.9 or newer and a reachable RabbitMQ server; uses Pika.
 
 This example uses a local RabbitMQ server's `guest` account. Use a dedicated
 account and environment variables or a secret store in production.
-It creates `defstream.example.rabbitmq` and leaves the queue in place.
+It creates `juststream.example.rabbitmq` and leaves the queue in place.
 
 ```python
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
 
 
 connection = Connection(Configuration(
@@ -70,9 +70,9 @@ connection = Connection(Configuration(
 ))
 try:
   connection.connect()
-  connection.create_queue('defstream.example.rabbitmq')
-  queue = connection.queue('defstream.example.rabbitmq')
-  queue.send({'message': 'Hello, DefStream!'})
+  connection.create_queue('juststream.example.rabbitmq')
+  queue = connection.queue('juststream.example.rabbitmq')
+  queue.send({'message': 'Hello, JustStream!'})
   event = queue.pop(timeout=1000)
   if event is not None:
     print(event.body)
@@ -99,12 +99,12 @@ the base `Connection` contract or Redis connections.
 
 This example consumes an empty queue and stops consumption from a callback
 after five seconds. It requires local RabbitMQ and leaves
-`defstream.example.timer` in place. Messages sent to this queue by other
+`juststream.example.timer` in place. Messages sent to this queue by other
 producers are printed and acknowledged.
 
 ```python
-from DefStream.Broker import Event, SetTimer
-from DefStream.Broker.Implements.RabbitMQ import Configuration, Connection
+from JustStream.Broker import Event, SetTimer
+from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
 
 
 def receive(event: Event) -> None:
@@ -122,9 +122,9 @@ try:
   connection.connect()
   if not isinstance(connection, SetTimer):
     raise TypeError('Connection does not support timers')
-  connection.create_queue('defstream.example.timer')
+  connection.create_queue('juststream.example.timer')
   consumer = connection.consumer()
-  consumer.subs('defstream.example.timer', receive)
+  consumer.subs('juststream.example.timer', receive)
 
   def expired() -> None:
     print('Timer fired')
@@ -155,7 +155,7 @@ closes the connection. It fires three times at five-second intervals, then
 stops, retaining the latest handle for cancellation.
 
 ```python
-from DefStream.Broker import Consumer, SetTimer, Timer
+from JustStream.Broker import Consumer, SetTimer, Timer
 
 
 def run_repeated(connection: SetTimer, consumer: Consumer) -> None:
@@ -202,11 +202,11 @@ general-purpose scheduler, or automatic cleanup layer is provided.
 
 `Connection`, `Consumer`, `Queue`, `Exchange`, `Stream`, and `Event` expose a class
 member `logger` named `Broker.RabbitMQ.ClassName`; the logger name differs
-from the module path `DefStream.Broker.Implements.RabbitMQ`. Subclasses
+from the module path `JustStream.Broker.Implements.RabbitMQ`. Subclasses
 inherit that logger unless they explicitly override it. The library adds no handlers
 (including `NullHandler`), levels, or filters; propagation and `logging.lastResort`
 keep their standard behavior.
-Update filters or handlers configured for the former `DefStream.Broker.RabbitMQ`
+Update filters or handlers configured for the former `JustStream.Broker.RabbitMQ`
 names to use `Broker.RabbitMQ`.
 
 The RabbitMQ implementation does not log normal operation at INFO.
@@ -227,7 +227,7 @@ points. Its filter accepts `Filter('Sample')` **or**
 `Filter('Broker.RabbitMQ')`, including dotted descendants only;
 Pika and core logs are excluded. Applications configure their own handlers, levels,
 and filters at `Broker`, `Broker.RabbitMQ`, or a class name. Broker loggers are
-outside the `DefStream` hierarchy; use `DefStream` separately for core logs.
+outside the `JustStream` hierarchy; use `JustStream` separately for core logs.
 
 ### Connection configuration
 
@@ -253,21 +253,21 @@ This executable example provisions a task queue and error queue, then consumes t
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
   Configuration,
   Connection,
   Reject,
   Subscription,
 )
-from DefStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(
   Run,
   parameters=Subscription(
-    queue='defstream.example.rabbitmq.add',
+    queue='juststream.example.rabbitmq.add',
     qos=4,
-    error='defstream.example.rabbitmq.add.error',
+    error='juststream.example.rabbitmq.add.error',
   ),
   on_error=Reject(),
 ):
@@ -347,8 +347,8 @@ from datetime import timedelta
 class LongRunningAdd(
   Add,
   parameters=Subscription(
-    queue='defstream.example.rabbitmq.long.add',
-    error='defstream.example.rabbitmq.long.add.error',
+    queue='juststream.example.rabbitmq.long.add',
+    error='juststream.example.rabbitmq.long.add.error',
     timeout=timedelta(hours=24),
   ),
 ):
@@ -374,7 +374,7 @@ Checks run approximately once per minute, so do not use this as a precise execut
 
 ### Worker task priorities
 
-Publish tasks with `DefStream.Worker.emit` or `connection.emit(body, parameters)`.
+Publish tasks with `JustStream.Worker.emit` or `connection.emit(body, parameters)`.
 The task publication API is `emit`. Low-level `send()` and RPC `call()` on queues, exchanges,
 and streams remain unchanged.
 
@@ -385,7 +385,7 @@ Set the default `priority` and queue `max_priority` together in the task's
 class PriorityAdd(
   Add,
   parameters=Subscription(
-    queue='defstream.example.rabbitmq.priority.add',
+    queue='juststream.example.rabbitmq.priority.add',
     qos=1,
     max_priority=5,
     priority=2,
@@ -426,7 +426,7 @@ Call a queue served by a running Worker to receive the result of `Run.run()`.
 Use the following between `connect()` and `close()` in the direct-connection example.
 
 ```python
-result = connection.queue('defstream.example.rabbitmq.add').call(
+result = connection.queue('juststream.example.rabbitmq.add').call(
   {'a': 10, 'b': 20},
   timeout=5,
 )
@@ -438,7 +438,7 @@ print(result)
 - Queue-based RPC uses a dedicated connection and creates a temporary reply queue named
   `{request queue}.{uuid4().hex}`, which is cleaned up on exit. Exchange RPC reply queue
   names are not affected by this rule.
-- Server rejection raises `DefStream.Broker.RemoteError`.
+- Server rejection raises `JustStream.Broker.RemoteError`.
   Requeue can retry without sending a final error response.
 - Reply publication and request ACK are not atomic. Handle duplicate execution with RPC too.
 

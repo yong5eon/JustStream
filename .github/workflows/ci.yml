@@ -197,7 +197,7 @@ jobs:
           - python: '3.9'
             os: ubuntu-24.04
     env:
-      PROJECT: DefStream
+      PROJECT: JustStream
     steps:
       - name: Check out core
         uses: actions/checkout@v7
@@ -224,7 +224,7 @@ jobs:
           from re import fullmatch
 
           project = environ['PROJECT']
-          if project != 'DefStream':
+          if project != 'JustStream':
               raise ValueError(f'Unexpected project: {project}')
           if environ['RELEASE_BUILD'] != 'true':
               print('Test-only build: using the existing Git-derived development version.')

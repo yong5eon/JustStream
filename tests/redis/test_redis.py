@@ -14,7 +14,7 @@ from unittest.mock import (
 
 from redis.exceptions import ResponseError
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
 	Connection,
 	Configuration,
 	ConnectionType,
@@ -24,7 +24,7 @@ from DefStream.Broker.Implements.Redis import (
 	Reject,
 	Subscription,
 )
-from DefStream.Broker.Implements.Redis.Serializer import (
+from JustStream.Broker.Implements.Redis.Serializer import (
 	JavaScriptObjectNotationDecoder,
 	JavaScriptObjectNotationEncoder,
 )
@@ -47,7 +47,7 @@ class RedisTests(TestCase):
 		with self.assertRaises(RuntimeError):
 			broker.queue('test')
 		with patch.object(
-			import_module('DefStream.Broker.Implements.Redis.Connection'),
+			import_module('JustStream.Broker.Implements.Redis.Connection'),
 			'Redis',
 		) as client:
 			client.return_value = self.connection
@@ -82,7 +82,7 @@ class RedisTests(TestCase):
 			)
 		broker = Connection(Configuration(type=ConnectionType.Cluster))
 		with patch.object(
-			import_module('DefStream.Broker.Implements.Redis.Connection'),
+			import_module('JustStream.Broker.Implements.Redis.Connection'),
 			'RedisCluster',
 		) as client:
 			broker.connect()

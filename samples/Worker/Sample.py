@@ -13,7 +13,7 @@ from typing import (
 	Optional,
 )
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Connection as BaseConnection,
 	GetQueue,
 	GetConsumer,
@@ -21,9 +21,9 @@ from DefStream.Broker import (
 	Consumer as BaseConsumer,
 	Event as BaseEvent,
 )
-from DefStream.Broker.Event import EventHandler
-from DefStream.Broker.Event import EventErrorPolicy
-from DefStream.Worker import (
+from JustStream.Broker.Event import EventHandler
+from JustStream.Broker.Event import EventErrorPolicy
+from JustStream.Worker import (
 	Run,
 	ThreadPool,
 	Worker,

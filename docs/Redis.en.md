@@ -11,11 +11,11 @@ Requires Python 3.9 or newer and Redis 6.2 or newer. Uses redis-py Streams, not 
 ### Send and receive messages
 
 This example assumes a local Redis server at `127.0.0.1:6379`.
-It creates the `defstream.example.redis` stream and `DefStream` group and leaves
+It creates the `juststream.example.redis` stream and `JustStream` group and leaves
 them in place.
 
 ```python
-from DefStream.Broker.Implements.Redis import Configuration, Connection
+from JustStream.Broker.Implements.Redis import Configuration, Connection
 
 
 connection = Connection(Configuration(
@@ -25,14 +25,14 @@ connection = Connection(Configuration(
 try:
   connection.connect()
   connection.create_queue(
-    'defstream.example.redis',
-    group='DefStream',
+    'juststream.example.redis',
+    group='JustStream',
   )
   queue = connection.queue(
-    'defstream.example.redis',
-    group='DefStream',
+    'juststream.example.redis',
+    group='JustStream',
   )
-  message_id = queue.send({'message': 'Hello, DefStream!'})
+  message_id = queue.send({'message': 'Hello, JustStream!'})
   print(message_id)
   event = queue.pop(timeout=1000)
   if event is not None:
@@ -69,7 +69,7 @@ Read production credentials from environment variables or a secret store.
 `Connection`, `Consumer`, `Queue`, and `Event` each use a class-level logger named
 `Broker.Redis.<ClassName>`. Records propagate to the parent `Broker` logger and
 the root logger. Update filters or handlers configured for the former
-`DefStream.Broker.Implements.Redis` names to use `Broker.Redis`. The library does
+`JustStream.Broker.Implements.Redis` names to use `Broker.Redis`. The library does
 not configure handlers or logging levels; configure output destinations and filters
 in your application.
 Records exclude message bodies and credentials, and existing exceptions still
@@ -80,7 +80,7 @@ the `Sample` and `Broker.Redis` logger hierarchies at DEBUG level.
 
 ### Consumer groups and history
 
-- `connection.queue(name, group='DefStream')` and `connection.stream(name, group='DefStream')`
+- `connection.queue(name, group='JustStream')` and `connection.stream(name, group='JustStream')`
   return the same stream-backed `Queue` type.
 - `create_queue()` and `create_stream()` prepare the stream and group.
   Publishing/subscribing can also create the required resources lazily.
@@ -94,7 +94,7 @@ Read stream history without changing group state using this snippet between
 `connect()` and `close()` in the direct-connection example:
 
 ```python
-for event in connection.stream('defstream.example.redis').read(
+for event in connection.stream('juststream.example.redis').read(
   offset=0,
   timeout=1000,
 ):
@@ -113,20 +113,20 @@ This executable example prepares a task stream and group, then consumes tasks.
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
   Configuration,
   Connection,
   Reject,
   Subscription,
 )
-from DefStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(
   Run,
   parameters=Subscription(
-    queue='defstream.example.redis.add',
-    group='DefStream',
+    queue='juststream.example.redis.add',
+    group='JustStream',
   ),
   on_error=Reject(),
 ):

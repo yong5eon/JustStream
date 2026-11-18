@@ -16,13 +16,13 @@ from uuid import uuid4
 
 import pika
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Connection,
 	Configuration,
 	Reject,
 	Subscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	ProcessPool,
 	Run,
 	ThreadPool,
@@ -60,7 +60,7 @@ class RabbitMQIntegrationTests(TestCase):
 					credentials=pika.PlainCredentials('guest', 'guest'),
 				))
 				channel = connection.channel()
-				prefix = 'defstream-test-' + uuid4().hex
+				prefix = 'juststream-test-' + uuid4().hex
 				queue, rejected, dead = prefix, prefix + '-reject', prefix + '-dead'
 				created = []
 				thread = None

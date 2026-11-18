@@ -11,10 +11,10 @@ Python 3.9 이상과 Redis 6.2 이상이 필요하며 redis-py의 Streams를 사
 ### 메시지 보내고 받기
 
 로컬 Redis가 `127.0.0.1:6379`에서 실행 중이라고 가정합니다.
-예제는 `defstream.example.redis` 스트림과 `DefStream` 그룹을 만들고 실행 후에도 유지합니다.
+예제는 `juststream.example.redis` 스트림과 `JustStream` 그룹을 만들고 실행 후에도 유지합니다.
 
 ```python
-from DefStream.Broker.Implements.Redis import Configuration, Connection
+from JustStream.Broker.Implements.Redis import Configuration, Connection
 
 
 connection = Connection(Configuration(
@@ -24,14 +24,14 @@ connection = Connection(Configuration(
 try:
   connection.connect()
   connection.create_queue(
-    'defstream.example.redis',
-    group='DefStream',
+    'juststream.example.redis',
+    group='JustStream',
   )
   queue = connection.queue(
-    'defstream.example.redis',
-    group='DefStream',
+    'juststream.example.redis',
+    group='JustStream',
   )
-  message_id = queue.send({'message': 'Hello, DefStream!'})
+  message_id = queue.send({'message': 'Hello, JustStream!'})
   print(message_id)
   event = queue.pop(timeout=1000)
   if event is not None:
@@ -67,7 +67,7 @@ Cluster는 Redis Cluster를 사용하며 `database=0`이어야 합니다.
 
 `Connection`, `Consumer`, `Queue`, `Event`는 각각
 `Broker.Redis.<클래스명>` 로거를 사용하며 상위 `Broker` 로거와 루트 로거로
-전파합니다. 기존 `DefStream.Broker.Implements.Redis` 이름으로 설정한 필터나
+전파합니다. 기존 `JustStream.Broker.Implements.Redis` 이름으로 설정한 필터나
 핸들러는 `Broker.Redis`로 갱신하세요. 라이브러리는 핸들러나 로그 수준을
 설정하지 않으므로 애플리케이션에서 필요한 출력 대상과 필터를 구성하세요.
 기록에는 메시지 본문과 인증 정보가 포함되지 않으며, 오류 로그 후에도 기존
@@ -77,7 +77,7 @@ traceback은 담당 경계 한 곳에서만 남기세요. 예제는 실행 진�
 
 ### 소비자 그룹과 이력
 
-- `connection.queue(name, group='DefStream')`과 `connection.stream(name, group='DefStream')`은
+- `connection.queue(name, group='JustStream')`과 `connection.stream(name, group='JustStream')`은
   같은 스트림 기반 `Queue`를 반환합니다.
 - `create_queue()`와 `create_stream()`은 스트림과 그룹을 준비합니다.
   발행·구독 시에도 필요한 리소스를 지연 생성할 수 있습니다.
@@ -91,7 +91,7 @@ traceback은 담당 경계 한 곳에서만 남기세요. 예제는 실행 진�
 다음은 위 직접 연결 예제에서 `connect()`와 `close()` 사이에 사용하는 코드입니다.
 
 ```python
-for event in connection.stream('defstream.example.redis').read(
+for event in connection.stream('juststream.example.redis').read(
   offset=0,
   timeout=1000,
 ):
@@ -110,20 +110,20 @@ for event in connection.stream('defstream.example.redis').read(
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.Redis import (
+from JustStream.Broker.Implements.Redis import (
   Configuration,
   Connection,
   Reject,
   Subscription,
 )
-from DefStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(
   Run,
   parameters=Subscription(
-    queue='defstream.example.redis.add',
-    group='DefStream',
+    queue='juststream.example.redis.add',
+    group='JustStream',
   ),
   on_error=Reject(),
 ):

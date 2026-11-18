@@ -2,11 +2,11 @@
 
 [← 매뉴얼 목차](./README.md)
 
-DefStream의 훅은 작업, 실행 풀의 각 스레드·프로세스, Worker의 세 범위에서 초기화·완료·오류·정리를 수행합니다. 이 문서는 각 훅이 실행되는 위치와 순서, 실패 처리와 자원 관리 기준을 설명합니다.
+JustStream의 훅은 작업, 실행 풀의 각 스레드·프로세스, Worker의 세 범위에서 초기화·완료·오류·정리를 수행합니다. 이 문서는 각 훅이 실행되는 위치와 순서, 실패 처리와 자원 관리 기준을 설명합니다.
 
 ## 훅의 종류와 계약
 
-모든 훅은 `DefStream.Worker`에서 가져올 수 있습니다. 각 훅 옵션에는 단일 호출 가능 객체 또는 순서가 있는 시퀀스를 전달할 수 있습니다.
+모든 훅은 `JustStream.Worker`에서 가져올 수 있습니다. 각 훅 옵션에는 단일 호출 가능 객체 또는 순서가 있는 시퀀스를 전달할 수 있습니다.
 
 | 범위 | 훅 | 호출 시점 | 전달 인자 |
 | --- | --- | --- | --- |
@@ -25,13 +25,13 @@ RabbitMQ 소비 장애 복구에서는 Pool 객체를 유지하고 내부 실행
 ```python
 from signal import SIGINT, signal
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
   Configuration,
   Connection,
   Reject,
   Subscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
   Context,
   PoolCleanup,
   PoolSetup,
@@ -85,7 +85,7 @@ class ReleaseWorker(WorkerCleanup):
 
 class Add(
   Run,
-  parameters=Subscription(queue='defstream.example.lifecycle'),
+  parameters=Subscription(queue='juststream.example.lifecycle'),
   on_error=Reject(),
   setups=TraceRunSetup(),
   completes=TraceRunComplete(),

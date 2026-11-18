@@ -18,7 +18,7 @@ from uuid import uuid4
 from redis import Redis
 from redis.cluster import RedisCluster
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Consumer as BaseConsumer,
 	Event as BaseEvent,
 	EventHandler,
@@ -33,7 +33,7 @@ from .Serializer import (
 	Encoder,
 )
 from .Subscription import Subscription
-from DefStream.Broker.Event import EventErrorPolicy
+from JustStream.Broker.Event import EventErrorPolicy
 
 __all__ = (
 	'Consumer',

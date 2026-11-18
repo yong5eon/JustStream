@@ -13,12 +13,12 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from DefStream.Broker.Implements.RabbitMQ import (
+from JustStream.Broker.Implements.RabbitMQ import (
 	Requeue,
 	Reject,
 	Subscription,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	PoolFull,
 	PoolSetup,
 	ProcessPool,
@@ -241,7 +241,7 @@ class PoolTests(TestCase):
 	def test_submission_failure_releases_capacity(self):
 		executor = Mock()
 		executor.submit.side_effect = RuntimeError('submit failed')
-		from DefStream.Worker import Pool
+		from JustStream.Worker import Pool
 		pool = Pool(executor, 1)
 		for _ in range(2):
 			with self.assertRaisesRegex(RuntimeError, 'submit failed'):

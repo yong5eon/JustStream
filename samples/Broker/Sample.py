@@ -6,7 +6,7 @@ from logging import (
 	getLogger,
 )
 
-from DefStream.Broker import (
+from JustStream.Broker import (
 	Configuration as BaseConfiguration,
 	Connection as BaseConnection,
 	GetExchange,
@@ -15,7 +15,7 @@ from DefStream.Broker import (
 	Sendable,
 	Consumer as BaseConsumer,
 )
-from DefStream.Broker.Event import EventHandler
+from JustStream.Broker.Event import EventHandler
 
 from queue import (
 	SimpleQueue,

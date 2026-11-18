@@ -19,16 +19,16 @@ from unittest import (
 from unittest.mock import Mock
 from uuid import uuid4
 
-from DefStream.Inspector import (
+from JustStream.Inspector import (
 	Extension,
 	Inspector,
 	Response,
 )
-from DefStream.Inspector.Extensions import (
+from JustStream.Inspector.Extensions import (
 	Metrics,
 	Ping,
 )
-from DefStream.Worker import (
+from JustStream.Worker import (
 	PoolFull,
 	Run,
 	ThreadPool,
@@ -350,7 +350,7 @@ class InspectorTests(InspectorIntegrationSupport, TestCase):
 				200,
 			)
 			self.assertIn(
-				b'defstream_worker_running 0',
+				b'juststream_worker_running 0',
 				body,
 			)
 		finally:
@@ -422,18 +422,18 @@ class InspectorTests(InspectorIntegrationSupport, TestCase):
 		):
 			labels = 'task="' + task.name + '"'
 			self.assertIn(
-				f'defstream_tasks_total{{{labels},outcome="{outcome}"}} 1',
+				f'juststream_tasks_total{{{labels},outcome="{outcome}"}} 1',
 				text,
 			)
 			self.assertIn(
-				f'defstream_tasks_active{{{labels}}} 0',
+				f'juststream_tasks_active{{{labels}}} 0',
 				text,
 			)
 			self.assertIn(
-				f'defstream_task_duration_seconds_count{{{labels}}} 1',
+				f'juststream_task_duration_seconds_count{{{labels}}} 1',
 				text,
 			)
-			duration = next(line for line in text.splitlines() if line.startswith(f'defstream_task_duration_seconds_sum{{{labels}}} '))
+			duration = next(line for line in text.splitlines() if line.startswith(f'juststream_task_duration_seconds_sum{{{labels}}} '))
 			self.assertGreaterEqual(
 				float(duration.rsplit(' ')[1]),
 				0,
@@ -472,7 +472,7 @@ class InspectorTests(InspectorIntegrationSupport, TestCase):
 			1,
 		)
 		self.assertIn(
-			'defstream_tasks_total{task="Orders.create-v2_Job",outcome="success"} 1',
+			'juststream_tasks_total{task="Orders.create-v2_Job",outcome="success"} 1',
 			metrics.render(inspector),
 		)
 

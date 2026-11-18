@@ -5,7 +5,7 @@ from typing import (
 	TypeVar,
 )
 
-from DefStream.Broker.Event import (
+from JustStream.Broker.Event import (
 	Event,
 	EventErrorPolicy,
 )
