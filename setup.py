@@ -1,24 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from os import environ
-from json import dumps
 from pathlib import Path
-from types import TracebackType
-from typing import (
-	Mapping,
-	Optional,
-)
+from typing import Optional
 
 from setuptools import (
-	find_packages,
+	Distribution,
+	find_namespace_packages,
 	setup,
 )
 from setuptools.command.build import build
-from setuptools.command.editable_wheel import editable_wheel
 from setuptools.command.egg_info import egg_info
 from setuptools.command.sdist import sdist
-from setuptools_scm import get_version
-from wheel.wheelfile import WheelFile
 
 PACKAGE = 'DefStream'
 SOURCE = 'src'
@@ -39,12 +32,6 @@ TARGET: str = environ.get(
 	'DEF_BUILD_TARGET',
 	ARCHIVE_TARGET or 'core',
 )
-EDITABLE: bool = 'DEF_EDITABLE_EXTRAS' in environ
-EXTRAS: list[str] = [
-	target for target in environ.get('DEF_EDITABLE_EXTRAS', '').split(',') if target
-]
-if any(target not in IMPLEMENTATIONS for target in EXTRAS):
-	raise ValueError('Unknown editable EXTRAS selection')
 if TARGET not in (
 	'core',
 	*IMPLEMENTATIONS,
@@ -53,10 +40,6 @@ if TARGET not in (
 if ARCHIVE_TARGET is not None and TARGET != ARCHIVE_TARGET:
 	raise ValueError('Cannot change the build target of a source distribution')
 
-VERSION: str = get_version(
-	dist_name=PACKAGE,
-	tag_regex=r'^v?(?P<version>[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?(?:(?:rc|\.post)[0-9]+)?)$',
-)
 NAME = PACKAGE if TARGET == 'core' else '{}-{}'.format(
 	PACKAGE,
 	TARGET,
@@ -64,12 +47,11 @@ NAME = PACKAGE if TARGET == 'core' else '{}-{}'.format(
 PACKAGES = [PACKAGE] if TARGET == 'core' else []
 PACKAGE_DIR = {PACKAGE: SOURCE} if TARGET == 'core' else {}
 
-for package in find_packages(SOURCE):
+for package in find_namespace_packages(SOURCE):
 	selected = (
 		not any(
-			(package == path or package.startswith(path + '.'))
-			and target not in EXTRAS
-			for target, path in IMPLEMENTATIONS.items()
+			package == path or package.startswith(path + '.')
+			for path in IMPLEMENTATIONS.values()
 		)
 		if TARGET == 'core' else (
 			package == IMPLEMENTATIONS[TARGET]
@@ -92,6 +74,34 @@ for package in find_packages(SOURCE):
 	)
 
 
+class TargetDistribution(Distribution):
+	def finalize_options(self) -> None:
+		super().finalize_options()
+		from setuptools_scm import get_version
+
+		version: str = get_version(
+			dist_name=PACKAGE,
+			tag_regex=r'^v?(?P<version>[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?(?:(?:rc|\.post)[0-9]+)?)$',
+		)
+		self.metadata.version = version
+		self.install_requires = [] if TARGET == 'core' else [
+			'{}=={}'.format(
+				PACKAGE,
+				version,
+			),
+			*DEPENDENCIES[TARGET],
+		]
+		self.extras_require = {
+			target: ['{}-{}=={}'.format(
+				PACKAGE,
+				target,
+				version,
+			)]
+			for target in IMPLEMENTATIONS
+		} if TARGET == 'core' else {}
+		return
+
+
 class TargetBuild(build):
 	def initialize_options(self) -> None:
 		super().initialize_options()
@@ -103,8 +113,6 @@ class TargetEggInfo(egg_info):
 	def find_sources(self) -> None:
 		super().find_sources()
 		self.filelist.extend([
-			'.dev/scripts/editable_view.py',
-			'.github/scripts/build_backend.py',
 			'.github/scripts/build_distributions.py',
 		])
 		self.filelist.sort()
@@ -144,103 +152,14 @@ class TargetSdist(sdist):
 		return
 
 
-class EditableView:
-	def __init__(
-		self,
-		name: str,
-		build_lib: str,
-	) -> None:
-		self.name = name
-		self.build_lib = Path(build_lib).resolve()
-		return
-
-	def __enter__(self) -> 'EditableView':
-		return self
-
-	def __exit__(
-		self,
-		exception_type: Optional[type[BaseException]],
-		exception: Optional[BaseException],
-		traceback: Optional[TracebackType],
-	) -> None:
-		return
-
-	def __call__(
-		self,
-		wheel: WheelFile,
-		files: list[str],
-		mapping: Mapping[str, str],
-	) -> None:
-		sources: dict[str, str] = {
-			Path(output).resolve().relative_to(self.build_lib).as_posix(): str(Path(source).resolve())
-			for output, source in mapping.items()
-		}
-		for output in files:
-			relative: str = Path(output).resolve().relative_to(self.build_lib).as_posix()
-			if relative not in sources:
-				raise ValueError('Editable output has no persistent source: {}'.format(output))
-		helper: str = '__editable_{}'.format(NAME.lower().replace(
-			'-',
-			'_',
-		))
-		wheel.writestr(
-			helper + '.py',
-			Path('.dev/scripts/editable_view.py').read_bytes(),
-		)
-		wheel.writestr(
-			self.name + '.dist-info/editable-files.json',
-			dumps(sources),
-		)
-		wheel.writestr(
-			self.name + '.dist-info/editable-selection.json',
-			dumps(EXTRAS),
-		)
-		names: tuple[str, ...] = (
-			PACKAGE,
-			*('{}-{}'.format(
-				PACKAGE,
-				target,
-			) for target in IMPLEMENTATIONS),
-		)
-		wheel.writestr(
-			'__editable__.{}.pth'.format(self.name),
-			'import {0}; {0}.activate({1!r}, {2!r})\n__editable_{3}_view\n'.format(
-				helper,
-				PACKAGE,
-				names,
-				PACKAGE.lower(),
-			),
-		)
-		return
-
-
-class TargetEditableWheel(editable_wheel):
-	def finalize_options(self) -> None:
-		super().finalize_options()
-		mode = 'strict'
-		if self.mode not in (
-			None,
-			mode,
-		):
-			raise ValueError('This build target requires {} editable mode'.format(mode))
-		self.mode = mode
-		return
-
-	def _select_strategy(
-		self,
-		name: str,
-		tag: str,
-		build_lib: str,
-	) -> EditableView:
-		return EditableView(
-			name,
-			build_lib,
-		)
-
-
 setup(
 	name=NAME,
-	version=VERSION,
+	setup_requires=[
+		'setuptools>=77',
+		'setuptools-scm>=8,<10',
+		'wheel',
+	],
+	distclass=TargetDistribution,
 	description='Synchronous message processing with pluggable broker adapters',
 	long_description=Path('README.setup.md').read_text(encoding='utf-8'),
 	long_description_content_type='text/markdown',
@@ -255,7 +174,6 @@ setup(
 		'build': TargetBuild,
 		'egg_info': TargetEggInfo,
 		'sdist': TargetSdist,
-		'editable_wheel': TargetEditableWheel,
 	},
 	packages=PACKAGES,
 	package_dir=PACKAGE_DIR,
@@ -274,24 +192,5 @@ setup(
 		'Programming Language :: Python :: 3.13',
 		'Programming Language :: Python :: 3.14',
 	],
-	install_requires=[
-		dependency for target in EXTRAS for dependency in DEPENDENCIES[target]
-	] if EDITABLE else [] if TARGET == 'core' else [
-		'{}=={}'.format(
-			PACKAGE,
-			VERSION,
-		),
-		*DEPENDENCIES[TARGET],
-	],
-	extras_require={
-		target: DEPENDENCIES[target] for target in IMPLEMENTATIONS
-	} if EDITABLE else {
-		target: ['{}-{}=={}'.format(
-			PACKAGE,
-			target,
-			VERSION,
-		)]
-		for target in IMPLEMENTATIONS
-	} if TARGET == 'core' else {},
 	python_requires='>=3.9',
 )

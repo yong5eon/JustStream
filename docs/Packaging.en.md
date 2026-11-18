@@ -25,34 +25,26 @@ Download the repository, activate a development virtual environment, and run the
 python -m pip install -e .
 ```
 
-This connects only the common code. To also work on the RabbitMQ or Redis implementations, list their names in `EXTRAS`. The following commands are separate examples: the first selects Redis only, and the second selects both implementations.
+This connects only the common core source. To run and test the RabbitMQ or Redis implementation, use standard extras syntax. The following commands are separate examples: the first selects Redis only, and the second selects both implementations.
 
 ```shell
-python -m pip install -e . --config-settings EXTRAS=Redis
-python -m pip install -e . --config-settings EXTRAS=RabbitMQ,Redis
+python -m pip install -e ".[Redis]"
+python -m pip install -e ".[RabbitMQ,Redis]"
 ```
 
-Each run replaces the selection. For example, running with `EXTRAS=Redis` after selecting both implementations removes the RabbitMQ code from the development environment. Running without `EXTRAS` leaves only the common code. Names are case-insensitive; unknown names produce an error. Required external libraries are installed, but libraries for deselected implementations are not automatically removed.
+The selected extra installs the matching-version `DefStream-RabbitMQ` or `DefStream-Redis` wheel and its external client. The editable installation connects the repository's core source. Reinstalling with another extra does not automatically remove a previously installed implementation; explicitly uninstall it when it is no longer needed.
 
 ### Try your changes
 
 1. Edit the code under `src/`.
 2. Start your application or tests again in the same virtual environment to check the result. Code in an already running program is not automatically reloaded.
-3. If you add files or change the installation configuration, repeat the installation command with the desired `EXTRAS`.
+3. If you change the installation configuration, repeat the installation command with the desired extras.
 
-The command connects the sources already on your computer. It does not fetch remote changes or force upgrades of external libraries. To select source code, use `--config-settings EXTRAS=Redis` as shown above, not `pip install -e ".[Redis]"`.
+The command connects the current core source on your computer; pip resolves implementation distributions and external libraries in its standard way.
 
 ### How the development connection works
 
-Only selected code is connected to the environment, and your IDE can find it too. Connections are managed automatically; you do not need to create links or add IDE search paths. Restart the language server if the IDE does not find the installed code right away. Multiple environments sharing the same sources keep their selections separate.
-
-Refresh keeps unchanged file connections and atomically replaces each changed connection. It removes only deselected managed files and preserves other files such as `.DS_Store`. Switching all files simultaneously is not guaranteed.
-
-If creating a connection fails, resolve the cause and repeat the installation command with the desired `EXTRAS`. The next refresh also reconciles files added before the failure with your selection.
-
-Each file's old bytecode cache is removed before replacing its connection. If a later connection fails, retrying therefore does not leave an already replaced file using stale cached code.
-
-On Windows, hard links are used if symbolic-link permissions are unavailable. In that case, keep the sources and virtual environment on the same drive. This connection management applies only to development installations, not regular wheel installations.
+Editable installs use setuptools' standard PEP 660 connection. Restart the language server if the IDE does not find the installed code immediately. Each virtual environment keeps its own installation state, and pip's normal dependency rules apply when extras are selected or removed.
 
 ## Build and validate
 
@@ -68,6 +60,8 @@ python -m twine check --strict dist/*
 ```
 
 The build script fixes the version, then creates each target's wheel and sdist in `dist/`. Do not mix other versions' artifacts. `--outdir` selects another destination; `--wheel` builds only wheels.
+
+Build dependencies are declared in `setup.py` using `setup_requires`. With no `pyproject.toml`, pip uses its default setuptools backend.
 
 Each sdist includes `.distribution-target`, allowing `python -m build` to recreate the same distribution without an environment variable. Changing the sdist target is rejected.
 

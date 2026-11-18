@@ -3,10 +3,7 @@ from importlib.metadata import (
 	PackageNotFoundError,
 	distributions,
 )
-from json import (
-	dumps,
-	loads,
-)
+from json import dumps
 from pathlib import Path
 from subprocess import run
 from sys import executable
@@ -43,10 +40,6 @@ def installed_distribution(
 
 
 def distribution_files(package: Distribution) -> set[str]:
-	manifest = package.read_text('editable-files.json')
-	if manifest is not None:
-		mapping: dict[str, str] = loads(manifest)
-		return set(mapping)
 	return {
 		str(path).replace(
 			'\\',
@@ -81,19 +74,14 @@ class BrokerPackagingTests(TestCase):
 	def test_brokers_are_owned_by_the_selected_distribution(self) -> None:
 		package = installed_distribution('DefStream')
 		files: set[str] = distribution_files(package)
-		selection = package.read_text('editable-selection.json')
 		for broker in (
 			'RabbitMQ',
 			'Redis',
 		):
 			with self.subTest(broker=broker):
-				owner_files: set[str] = (
-					distribution_files(installed_distribution('DefStream-' + broker))
-					if selection is None else files
+				owner_files: set[str] = distribution_files(
+					installed_distribution('DefStream-' + broker),
 				)
-				if selection is not None:
-					with self.assertRaises(PackageNotFoundError):
-						installed_distribution('DefStream-' + broker)
 				for module in (
 					'__init__',
 					'Configuration',
@@ -105,34 +93,13 @@ class BrokerPackagingTests(TestCase):
 					'Subscription',
 				):
 					path = f'DefStream/Broker/Implements/{broker}/{module}.py'
-					if selection is None:
-						self.assertNotIn(path, files)
-						self.assertIn(path, owner_files)
-					else:
-						self.assertEqual(
-							path in files,
-							broker in loads(selection),
-						)
+					self.assertNotIn(path, files)
+					self.assertIn(path, owner_files)
 		return
 
 	def test_dependencies_match_the_distribution_mode(self) -> None:
 		package = installed_distribution('DefStream')
 		dependencies = require_value(package.requires)
-		selection = package.read_text('editable-selection.json')
-		if selection is not None:
-			selected: list[str] = loads(selection)
-			clients: dict[str, str] = {
-				'RabbitMQ': 'pika>=1.3.2',
-				'Redis': 'redis>=5.1.1',
-			}
-			self.assertCountEqual(
-				dependencies,
-				[
-					*(clients[broker] for broker in selected),
-					*(f'{client}; extra == "{broker.lower()}"' for broker, client in clients.items()),
-				],
-			)
-			return
 		self.assertEqual(
 			len(dependencies),
 			2,
