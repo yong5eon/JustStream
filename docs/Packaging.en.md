@@ -70,3 +70,17 @@ Each sdist includes `.distribution-target`, allowing `python -m build` to recrea
 Sdists contain the shared source tree. Unselected implementation files are excluded from built wheels and installed files; the source archives themselves are not split into isolated source trees.
 
 CI checks build and installation isolation on supported Python versions. Releases verify names, versions and build numbers, then publish implementations before the core. PyPI publishing permissions and the token must cover all three names. Local builds do not publish anything.
+
+### Tags for release notes
+
+When a new public version is released, the message of an annotated tag named after the commit SHA becomes the GitHub Release body. The tag name is the full SHA without any prefix. The release fails if the tag is missing, is a lightweight tag, or has an empty message. Rebuilding only the wheel of an existing public version reuses the existing release notes and needs no tag.
+
+- A direct push to `master` reads the tag of the last pushed commit SHA from the original repository.
+- A merged PR reads the tag of the PR's last commit (`head.sha`), not the merge result, from the PR's source repository (original or fork).
+
+Push the tag to the source repository before pushing or merging the PR.
+
+```shell
+git tag -a "$(git rev-parse HEAD)" -F CHANGELOG.md
+git push origin "$(git rev-parse HEAD)"
+```
