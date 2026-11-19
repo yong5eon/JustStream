@@ -10,12 +10,7 @@ BUMP_ORDER: dict[str, int] = {
 	'patch': 1,
 	'minor': 2,
 }
-TYPE_BUMPS: dict[str, str] = {
-	'feature': 'minor',
-	'bug': 'patch',
-	'task': 'keep',
-}
-LABEL_BUMPS: dict[str, str] = {
+NAME_BUMPS: dict[str, str] = {
 	'feature': 'minor',
 	'bug': 'patch',
 	'fix': 'patch',
@@ -54,20 +49,18 @@ def classify_issue(
 	issue: dict[str, Any],
 ) -> str:
 	"""
-	Classify one issue by its type, falling back to labels only when it has no type.
+	Classify one issue by its type and labels together, using the highest increase found.
 	"""
 	issue_type: Optional[dict[str, str]] = issue['issueType']
+	names: list[str] = [label['name'] for label in issue['labels']['nodes']]
 	if issue_type is not None:
-		return TYPE_BUMPS.get(
-			issue_type['name'].lower(),
-			'keep',
-		)
+		names.append(issue_type['name'])
 	return higher([
-		LABEL_BUMPS.get(
-			label['name'].lower(),
+		NAME_BUMPS.get(
+			name.lower(),
 			'keep',
 		)
-		for label in issue['labels']['nodes']
+		for name in names
 	])
 
 
