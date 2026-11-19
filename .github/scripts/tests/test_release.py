@@ -22,11 +22,10 @@ from unittest.mock import patch
 from urllib.error import HTTPError
 from zipfile import ZipFile
 
-from build_distributions import (
-	IMPLEMENTATIONS,
+from prepare_upload import (
 	PROJECT,
+	main as prepare,
 )
-from prepare_upload import main as prepare
 
 
 @contextmanager
@@ -43,10 +42,7 @@ def chdir(directory: str) -> Iterator[None]:
 class ReleaseTests(TestCase):
 	def create_distributions(self) -> None:
 		Path('dist').mkdir()
-		for project in (
-			PROJECT,
-			*(f'{PROJECT}-{target}' for target in IMPLEMENTATIONS),
-		):
+		for project in (PROJECT,):
 			name = project.lower().replace(
 				'-',
 				'_',
@@ -72,7 +68,7 @@ class ReleaseTests(TestCase):
 				)
 		return
 
-	def test_new_release_stages_implementations_separately_from_core(self) -> None:
+	def test_new_release_stages_wheel_and_source(self) -> None:
 		with TemporaryDirectory() as temporary, chdir(temporary), patch.dict(
 			environ,
 			{
@@ -95,12 +91,8 @@ class ReleaseTests(TestCase):
 			):
 				prepare()
 			self.assertEqual(
-				len(list(Path('upload/core').iterdir())),
+				len(list(Path('upload').iterdir())),
 				2,
-			)
-			self.assertEqual(
-				len(list(Path('upload/implementations').iterdir())),
-				2 * len(IMPLEMENTATIONS),
 			)
 			self.assertIn(
 				'publish=true',
@@ -108,7 +100,7 @@ class ReleaseTests(TestCase):
 			)
 		return
 
-	def test_same_version_rebuild_requires_all_distributions_to_exist(self) -> None:
+	def test_same_version_rebuild_requires_the_distribution_to_exist(self) -> None:
 		with TemporaryDirectory() as temporary, chdir(temporary), patch.dict(
 			environ,
 			{
@@ -154,7 +146,7 @@ class ReleaseTests(TestCase):
 				prepare()
 		return
 
-	def test_missing_implementation_is_rejected(self) -> None:
+	def test_missing_wheel_is_rejected(self) -> None:
 		with TemporaryDirectory() as temporary, chdir(temporary), patch.dict(
 			environ,
 			{
@@ -167,7 +159,7 @@ class ReleaseTests(TestCase):
 			next(Path('dist').glob('*.whl')).unlink()
 			with self.assertRaisesRegex(
 				ValueError,
-				'Missing core or implementation',
+				'Missing wheel',
 			):
 				prepare()
 		return
@@ -192,10 +184,7 @@ class ReleaseTests(TestCase):
 					for path in Path('dist').iterdir()
 				],
 			}
-			responses = [
-				BytesIO(dumps(release).encode())
-				for _ in range(len(IMPLEMENTATIONS) + 1)
-			]
+			responses = [BytesIO(dumps(release).encode())]
 			with patch(
 				'prepare_upload.urlopen',
 				side_effect=responses,

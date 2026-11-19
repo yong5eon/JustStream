@@ -20,9 +20,9 @@ python -m pip install "JustStream[RabbitMQ,Redis]"
 ```
 
 코어만 필요하면 `python -m pip install JustStream`을 사용합니다.
-기본 설치에는 브로커 구현체와 클라이언트가 모두 포함되지 않습니다.
-`RabbitMQ` extra는 동일 버전 `JustStream-RabbitMQ`와 `pika>=1.3.2`를,
-`Redis` extra는 동일 버전 `JustStream-Redis`와 `redis>=5.1.1`을 설치합니다.
+기본 설치에는 모든 브로커 구현체 소스가 포함되며 클라이언트는 포함되지 않습니다.
+`RabbitMQ` extra는 `pika>=1.3.2`를,
+`Redis` extra는 `redis>=5.1.1`을 설치합니다.
 
 | 선택 설치 | Python import 경로 | 사용 안내 |
 | --- | --- | --- |
@@ -30,7 +30,7 @@ python -m pip install "JustStream[RabbitMQ,Redis]"
 | `JustStream[RabbitMQ]` | `JustStream.Broker.Implements.RabbitMQ` | [RabbitMQ 사용 방법](./RabbitMQ.md#rabbitmq-사용-방법) |
 | `JustStream[Redis]` | `JustStream.Broker.Implements.Redis` | [Redis 사용 방법](./Redis.md#redis-사용-방법) |
 
-코어와 구현체는 같은 저장소에서 함께 빌드·버전 관리하지만 별도 배포물로 설치됩니다.
+모든 소스는 하나의 `JustStream` 배포물에 포함되며 extra는 클라이언트 의존성만 추가합니다.
 소스 코드를 수정하고 싶다면 [설치 격리와 개발·배포](./Packaging.md)를 참고하세요.
 
 

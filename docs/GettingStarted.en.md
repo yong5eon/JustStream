@@ -19,10 +19,10 @@ python -m pip install "JustStream[Redis]"
 python -m pip install "JustStream[RabbitMQ,Redis]"
 ```
 
-For the core alone, use `python -m pip install JustStream`.
-The base installation excludes both broker implementations and clients.
-The `RabbitMQ` extra installs the same-version `JustStream-RabbitMQ` and `pika>=1.3.2`;
-the `Redis` extra installs the same-version `JustStream-Redis` and `redis>=5.1.1`.
+For installation without broker clients, use `python -m pip install JustStream`.
+The base installation includes all broker implementation sources but no clients.
+The `RabbitMQ` extra installs `pika>=1.3.2`;
+the `Redis` extra installs `redis>=5.1.1`.
 
 | Installation choice | Python import path | Guide |
 | --- | --- | --- |
@@ -30,7 +30,7 @@ the `Redis` extra installs the same-version `JustStream-Redis` and `redis>=5.1.1
 | `JustStream[RabbitMQ]` | `JustStream.Broker.Implements.RabbitMQ` | [RabbitMQ usage](./RabbitMQ.en.md#rabbitmq-usage) |
 | `JustStream[Redis]` | `JustStream.Broker.Implements.Redis` | [Redis usage](./Redis.en.md#redis-usage) |
 
-The core and implementations share one repository and version but install as separate distributions.
+All sources ship in the single `JustStream` distribution; extras only add client dependencies.
 To modify the source code, see [installation isolation, development and distribution](./Packaging.en.md).
 
 
