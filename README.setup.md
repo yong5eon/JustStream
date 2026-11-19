@@ -12,9 +12,9 @@ Install the client extra for the broker you use. A broker server must be availab
 python -m pip install "JustStream[RabbitMQ]"
 ```
 
-For Redis Streams, install `JustStream[Redis]`. To install both adapters and clients, use `JustStream[RabbitMQ,Redis]`. The plain `JustStream` installation includes neither broker implementation nor client. Each extra installs a separate, same-version adapter distribution, preserving existing import paths.
+For Redis Streams, install `JustStream[Redis]`. To install both adapters and clients, use `JustStream[RabbitMQ,Redis]`. The single `JustStream` distribution always includes all broker implementation sources, preserving existing import paths; each extra only installs that broker's client dependency.
 
-Before migrating an older integrated installation or historical standalone adapters, uninstall JustStream, JustStream-RabbitMQ and JustStream-Redis, then reinstall with the desired extras. Omitting an extra later does not remove an already installed adapter.
+If you previously installed the separate adapter distributions, uninstall JustStream, JustStream-RabbitMQ and JustStream-Redis, then reinstall JustStream with the desired extras.
 
 ## Quick start
 

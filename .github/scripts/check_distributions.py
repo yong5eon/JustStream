@@ -1,20 +1,23 @@
 from argparse import ArgumentParser
 from email.parser import BytesParser
-from itertools import combinations
 from os import environ
 from pathlib import Path
 from shutil import copy2
 from subprocess import run
 from sys import executable
-from tarfile import open as open_tar
 from tempfile import TemporaryDirectory
 from venv import EnvBuilder
 from zipfile import ZipFile
 
-from build_distributions import (
-	IMPLEMENTATIONS,
-	PROJECT,
-	ROOT,
+PROJECT = 'JustStream'
+ROOT = Path(__file__).resolve().parents[2]
+EXTRAS = (
+	'RabbitMQ',
+	'Redis',
+)
+MODULES = (
+	'Broker.Implements.RabbitMQ',
+	'Broker.Implements.Redis',
 )
 
 
@@ -65,26 +68,19 @@ def verify_install(
 	python: str,
 	directory: Path,
 	environment: dict[str, str],
-	selected: tuple[str, ...],
-	editable: bool = False,
+	clients: bool,
 ) -> None:
 	code = (
 		'from importlib import import_module\n'
 		'from importlib.util import find_spec\n'
-		'from importlib.metadata import distribution, PackageNotFoundError\n'
 		f'import_module({PROJECT!r})\n'
-		f'for target, path in {IMPLEMENTATIONS!r}.items():\n'
-		f'    selected = target in {selected!r}\n'
+		f'for path in {MODULES!r}:\n'
 		f'    module = {PROJECT!r} + "." + path\n'
-		f'    assert (find_spec(module) is not None) == ({editable} or selected), module\n'
-		'    if selected:\n'
+		'    assert find_spec(module) is not None, module\n'
+		f'    if {clients!r}:\n'
 		'        import_module(module)\n'
-		'    try:\n'
-		f'        installed = distribution({PROJECT!r} + "-" + target)\n'
-		'    except PackageNotFoundError:\n'
-		'        assert not selected, target\n'
-		'    else:\n'
-		'        assert selected, target\n'
+		f'for client in {("pika", "redis")!r}:\n'
+		f'    assert (find_spec(client) is not None) == {clients!r}, client\n'
 	)
 	check(
 		[
@@ -109,19 +105,28 @@ def verify_install(
 	return
 
 
-def local_requirements(
-	wheels: dict[str, Path],
-	selected: tuple[str, ...],
-) -> list[str]:
-	extras: str = '[' + ','.join(selected) + ']' if selected else ''
-	return [
-		f'{PROJECT}{extras} @ {wheels[PROJECT.lower()].resolve().as_uri()}',
-		*(str(wheels[f'{PROJECT}-{target}'.lower()].resolve()) for target in selected),
-	]
+def read_wheel(wheel: Path) -> tuple[dict[str, str], dict[str, bytes]]:
+	with ZipFile(wheel) as archive:
+		metadata_path, = (
+			name for name in archive.namelist()
+			if name.endswith('.dist-info/METADATA')
+		)
+		metadata = BytesParser().parsebytes(archive.read(metadata_path))
+		payload = {
+			path: archive.read(path)
+			for path in archive.namelist()
+			if path.startswith(PROJECT + '/')
+		}
+	return {
+		'Name': metadata['Name'],
+		'Version': metadata['Version'],
+		'Extras': ','.join(sorted(metadata.get_all('Provides-Extra', []))),
+		'Requires': '\n'.join(metadata.get_all('Requires-Dist', [])),
+	}, payload
 
 
 def main() -> None:
-	parser = ArgumentParser(description='Verify distribution ownership, rebuilds and installation isolation.')
+	parser = ArgumentParser(description='Verify the distribution contents, rebuilds and installation.')
 	parser.add_argument(
 		'--dist-dir',
 		default='dist',
@@ -134,71 +139,31 @@ def main() -> None:
 	dist = Path(options.dist_dir).resolve()
 	environment: dict[str, str] = dict(environ)
 	environment.pop(
-		'DEF_BUILD_TARGET',
-		None,
-	)
-	environment.pop(
 		'SETUPTOOLS_SCM_PRETEND_VERSION',
 		None,
 	)
-	wheels = sorted(dist.glob('*.whl'))
-	expected = {
-		PROJECT.lower(),
-		*(f'{PROJECT}-{target}'.lower() for target in IMPLEMENTATIONS),
-	}
-	contents: dict[str, dict[str, bytes]] = {}
-	local_wheels: dict[str, Path] = {}
-	version = ''
-	owned: set[str] = set()
-	for wheel in wheels:
-		with ZipFile(wheel) as archive:
-			metadata_path, = (
-				name for name in archive.namelist()
-				if name.endswith('.dist-info/METADATA')
-			)
-			metadata = BytesParser().parsebytes(archive.read(metadata_path))
-			name = metadata['Name'].lower()
-			assert name in expected and name not in contents, name
-			if version:
-				assert metadata['Version'] == version
-			version = metadata['Version']
-			payload = {
-				path: archive.read(path)
-				for path in archive.namelist()
-				if path.startswith(PROJECT + '/')
-			}
-			assert payload, name
-			assert not (owned & payload.keys()), name
-			owned.update(payload)
-			contents[name] = payload
-			local_wheels[name] = wheel
-			for target, path in IMPLEMENTATIONS.items():
-				prefix = PROJECT + '/' + path.replace(
-					'.',
-					'/',
-				) + '/'
-				present = any(item.startswith(prefix) for item in payload)
-				assert present == (name == f'{PROJECT}-{target}'.lower()), (
-					name,
-					target,
-				)
-	assert set(contents) == expected
+	wheel, = dist.glob('*.whl')
+	metadata, payload = read_wheel(wheel)
+	assert metadata['Name'] == PROJECT, metadata['Name']
+	assert metadata['Extras'].lower() == ','.join(sorted(extra.lower() for extra in EXTRAS)), metadata['Extras']
+	assert f'{PROJECT}-' not in metadata['Requires'], metadata['Requires']
+	for path in MODULES:
+		prefix = PROJECT + '/' + path.replace(
+			'.',
+			'/',
+		) + '/'
+		assert any(item.startswith(prefix) for item in payload), path
+	version = metadata['Version']
 
 	with TemporaryDirectory() as temporary:
 		directory = Path(temporary)
 		sources = sorted(dist.glob('*.tar.gz'))
 		assert len(sources) in (
 			0,
-			len(expected),
+			1,
 		)
-		for index, source in enumerate(sources):
-			with open_tar(source) as archive:
-				root = archive.getnames()[0].split('/')[0]
-				for filename in (
-					'.github/scripts/build_distributions.py',
-				):
-					assert archive.getmember(root + '/' + filename).isfile(), filename
-			rebuilt = directory / f'rebuilt-{index}'
+		for source in sources:
+			rebuilt = directory / 'rebuilt'
 			check(
 				[
 					executable,
@@ -215,103 +180,45 @@ def main() -> None:
 				directory,
 				environment,
 			)
-			wheel, = rebuilt.glob('*.whl')
-			with ZipFile(wheel) as archive:
-				metadata_path, = (name for name in archive.namelist() if name.endswith('.dist-info/METADATA'))
-				metadata = BytesParser().parsebytes(archive.read(metadata_path))
-				assert metadata['Version'] == version
-				payload = {
-					path: archive.read(path)
-					for path in archive.namelist()
-					if path.startswith(PROJECT + '/')
-				}
-				assert payload == contents[metadata['Name'].lower()]
-		targets = tuple(IMPLEMENTATIONS)
-		for count in range(len(targets) + 1):
-			for selected in combinations(
-				targets,
-				count,
-			):
-				python = python_in(directory / ('installed-' + '-'.join(selected)))
-				check(
-					[
-						python,
-						'-m',
-						'pip',
-						'install',
-						*local_requirements(
-							local_wheels,
-							selected,
-						),
-					],
-					directory,
-					environment,
-				)
-				verify_install(
-					python,
-					directory,
-					environment,
-					selected,
-				)
-				if not selected:
-					for target in targets:
-						check(
-							[
-								python,
-								'-m',
-								'pip',
-								'install',
-								*local_requirements(
-									local_wheels,
-									(target,),
-								),
-							],
-							directory,
-							environment,
-						)
-					verify_install(
-						python,
-						directory,
-						environment,
-						targets,
-					)
-					check(
-						[
-							python,
-							'-m',
-							'pip',
-							'install',
-							'--force-reinstall',
-							'--no-deps',
-							*(str(wheel) for wheel in wheels),
-						],
-						directory,
-						environment,
-					)
-					verify_install(
-						python,
-						directory,
-						environment,
-						targets,
-					)
-					check(
-						[
-							python,
-							'-m',
-							'pip',
-							'uninstall',
-							'-y',
-							f'{PROJECT}-{targets[0]}',
-						],
-						directory,
-						environment,
-					)
-					verify_install(
-						python,
-						directory,
-						environment,
-						targets[1:],
-					)
+			rebuilt_metadata, rebuilt_payload = read_wheel(next(rebuilt.glob('*.whl')))
+			assert rebuilt_metadata == metadata
+			assert rebuilt_payload == payload
+		python = python_in(directory / 'plain')
+		check(
+			[
+				python,
+				'-m',
+				'pip',
+				'install',
+				str(wheel),
+			],
+			directory,
+			environment,
+		)
+		verify_install(
+			python,
+			directory,
+			environment,
+			False,
+		)
+		python = python_in(directory / 'extras')
+		check(
+			[
+				python,
+				'-m',
+				'pip',
+				'install',
+				f'{PROJECT}[{",".join(EXTRAS)}] @ {wheel.as_uri()}',
+			],
+			directory,
+			environment,
+		)
+		verify_install(
+			python,
+			directory,
+			environment,
+			True,
+		)
 		if options.editable:
 			source = directory / 'source'
 			source.mkdir()
@@ -350,33 +257,24 @@ def main() -> None:
 			)
 			python = python_in(directory / 'editable')
 			environment['SETUPTOOLS_SCM_PRETEND_VERSION'] = version
-			for selected in (
-				(),
-				targets[:1],
-				targets,
-			):
-				extras = '[' + ','.join(selected) + ']' if selected else ''
-				check(
-					[
-						python,
-						'-m',
-						'pip',
-						'install',
-						'--find-links',
-						str(dist),
-						'-e',
-						str(source) + extras,
-					],
-					directory,
-					environment,
-				)
-				verify_install(
+			check(
+				[
 					python,
-					directory,
-					environment,
-					selected,
-					True,
-				)
+					'-m',
+					'pip',
+					'install',
+					'-e',
+					f'{source}[{",".join(EXTRAS)}]',
+				],
+				directory,
+				environment,
+			)
+			verify_install(
+				python,
+				directory,
+				environment,
+				True,
+			)
 			probe.write_text(
 				'VALUE = 200\n',
 				encoding='utf-8',
@@ -391,48 +289,7 @@ def main() -> None:
 				directory,
 				environment,
 			)
-			other = python_in(directory / 'other-editable')
-			check(
-				[
-					other,
-					'-m',
-					'pip',
-					'install',
-					'-e',
-					str(source),
-				],
-				directory,
-				environment,
-			)
-			verify_install(
-				other,
-				directory,
-				environment,
-				(),
-				True,
-			)
-			check(
-				[
-					other,
-					'-m',
-					'pip',
-					'install',
-					'--find-links',
-					str(dist),
-					'-e',
-					str(source) + '[' + targets[0] + ']',
-				],
-				directory,
-				environment,
-			)
-			verify_install(
-				other,
-				directory,
-				environment,
-				targets[:1],
-				True,
-			)
-	print(f'{PROJECT}: ownership, sdist rebuilds and editable extras checks passed')
+	print(f'{PROJECT}: contents, sdist rebuild and installation checks passed')
 	return
 
 

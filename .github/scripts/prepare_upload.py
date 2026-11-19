@@ -9,19 +9,13 @@ from urllib.error import HTTPError
 from urllib.request import urlopen
 from zipfile import ZipFile
 
-from build_distributions import (
-	IMPLEMENTATIONS,
-	PROJECT,
-)
+PROJECT = 'JustStream'
 
 
 def main() -> None:
 	version = environ['RELEASE_VERSION']
 	new_version = environ['NEW_VERSION'] == 'true'
-	expected = {
-		PROJECT,
-		*(f'{PROJECT}-{target}' for target in IMPLEMENTATIONS),
-	}
+	expected = {PROJECT}
 	distributions: dict[str, list[Path]] = {}
 	for wheel in Path('dist').glob('*.whl'):
 		if wheel.name.split('-')[2] != environ['WHEEL_BUILD']:
@@ -37,7 +31,7 @@ def main() -> None:
 			raise ValueError('Unexpected wheel name or version: {}'.format(wheel.name))
 		distributions[name] = [wheel]
 	if set(distributions) != expected:
-		raise ValueError('Missing core or implementation wheels')
+		raise ValueError('Missing wheel')
 	source_names: set[str] = set()
 	for source in Path('dist').glob('*.tar.gz'):
 		with open_tar(
@@ -61,8 +55,7 @@ def main() -> None:
 	if source_names != (expected if new_version else set()):
 		raise ValueError('Unexpected source distribution count for the release plan')
 	upload = Path('upload')
-	(upload / 'core').mkdir(parents=True)
-	(upload / 'implementations').mkdir()
+	upload.mkdir()
 	for project, paths in distributions.items():
 		try:
 			with urlopen(
@@ -84,17 +77,16 @@ def main() -> None:
 					raise RuntimeError('Published file differs: {}'.format(path.name))
 				print('Already published: {}'.format(path.name))
 			else:
-				destination = upload / ('core' if project == PROJECT else 'implementations')
 				copy2(
 					path,
-					destination / path.name,
+					upload / path.name,
 				)
 	with Path(environ['GITHUB_OUTPUT']).open(
 		'a',
 		encoding='utf-8',
 	) as output:
 		output.write('publish={}\nversion={}\n'.format(
-			str(any(upload.glob('*/*'))).lower(),
+			str(any(upload.iterdir())).lower(),
 			version,
 		))
 	return

@@ -71,7 +71,7 @@ class BrokerPackagingTests(TestCase):
 			)
 		return
 
-	def test_brokers_are_owned_by_the_selected_distribution(self) -> None:
+	def test_brokers_are_part_of_the_distribution(self) -> None:
 		package = installed_distribution('JustStream')
 		files: set[str] = distribution_files(package)
 		for broker in (
@@ -79,9 +79,6 @@ class BrokerPackagingTests(TestCase):
 			'Redis',
 		):
 			with self.subTest(broker=broker):
-				owner_files: set[str] = distribution_files(
-					installed_distribution('JustStream-' + broker),
-				)
 				for module in (
 					'__init__',
 					'Configuration',
@@ -92,40 +89,32 @@ class BrokerPackagingTests(TestCase):
 					'Serializer',
 					'Subscription',
 				):
-					path = f'JustStream/Broker/Implements/{broker}/{module}.py'
-					self.assertNotIn(path, files)
-					self.assertIn(path, owner_files)
+					self.assertIn(
+						f'JustStream/Broker/Implements/{broker}/{module}.py',
+						files,
+					)
 		return
 
-	def test_dependencies_match_the_distribution_mode(self) -> None:
+	def test_extras_only_add_client_dependencies(self) -> None:
 		package = installed_distribution('JustStream')
 		dependencies = require_value(package.requires)
 		self.assertEqual(
 			len(dependencies),
 			2,
 		)
-		version = package.version
-		for broker in (
-			'RabbitMQ',
-			'Redis',
+		for requirement, extra in (
+			('pika>=1.3.2', 'RabbitMQ'),
+			('redis>=5.1.1', 'Redis'),
 		):
 			self.assertTrue(any(
-				requirement.startswith(f'JustStream-{broker}=={version};')
-				and broker.lower() in requirement.lower()
-				for requirement in dependencies
+				dependency.startswith(requirement + ';')
+				and extra.lower() in dependency.lower()
+				for dependency in dependencies
 			))
-			self.assertIn(
-				f'JustStream=={version}',
-				require_value(installed_distribution('JustStream-' + broker).requires),
-			)
-		self.assertIn(
-			'pika>=1.3.2',
-			require_value(installed_distribution('JustStream-RabbitMQ').requires),
-		)
-		self.assertIn(
-			'redis>=5.1.1',
-			require_value(installed_distribution('JustStream-Redis').requires),
-		)
+		self.assertFalse(any(
+			dependency.startswith('JustStream-')
+			for dependency in dependencies
+		))
 		return
 
 	def test_imports_do_not_require_unselected_clients(self):

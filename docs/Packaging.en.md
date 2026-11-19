@@ -4,15 +4,14 @@
 
 ## Installed files
 
-The `JustStream` core has no broker implementations. The `RabbitMQ` and `Redis` extras install the same-version `JustStream-RabbitMQ` and `JustStream-Redis` distributions and their external clients. Existing Python import paths remain unchanged.
+The single `JustStream` distribution always installs the core and all broker implementation sources. The `RabbitMQ` and `Redis` extras only add the external client dependencies (`pika` and `redis`). Existing Python import paths remain unchanged.
 
-In a new environment unselected implementation files and clients are absent. Omitting an extra later does not uninstall an existing implementation; explicitly remove its distribution when no longer needed.
+Without an extra, the implementation sources are installed but their clients are absent, so importing a broker module fails until the extra is installed. Omitting an extra later does not uninstall an already installed client.
 
 ```mermaid
 flowchart LR
   A["Install JustStream[Redis]"] --> B["Core"]
-  A --> C["Same-version Redis implementation"]
-  C --> D["redis client"]
+  A --> C["redis client"]
 ```
 
 ## When you want to modify the source code
@@ -25,14 +24,14 @@ Download the repository, activate a development virtual environment, and run the
 python -m pip install -e .
 ```
 
-This connects only the common core source. To run and test the RabbitMQ or Redis implementation, use standard extras syntax. The following commands are separate examples: the first selects Redis only, and the second selects both implementations.
+This connects the repository source, including all broker implementations. To run and test a broker, also install its client with standard extras syntax. The following commands are separate examples: the first selects Redis only, and the second selects both.
 
 ```shell
 python -m pip install -e ".[Redis]"
 python -m pip install -e ".[RabbitMQ,Redis]"
 ```
 
-The selected extra installs the matching-version `JustStream-RabbitMQ` or `JustStream-Redis` wheel and its external client. The editable installation connects the repository's core source. Reinstalling with another extra does not automatically remove a previously installed implementation; explicitly uninstall it when it is no longer needed.
+The selected extra installs only the matching external client (`pika` or `redis`). Reinstalling with another extra does not automatically remove a previously installed client.
 
 ### Try your changes
 
@@ -40,7 +39,7 @@ The selected extra installs the matching-version `JustStream-RabbitMQ` or `JustS
 2. Start your application or tests again in the same virtual environment to check the result. Code in an already running program is not automatically reloaded.
 3. If you change the installation configuration, repeat the installation command with the desired extras.
 
-The command connects the current core source on your computer; pip resolves implementation distributions and external libraries in its standard way.
+The command connects the current source on your computer; pip resolves external libraries in its standard way.
 
 ### How the development connection works
 
@@ -48,28 +47,22 @@ Editable installs use setuptools' standard PEP 660 connection. Restart the langu
 
 ## Build and validate
 
-Installation checks explicitly select the locally built core and implementation wheels. Same-version files from PyPI cannot replace those validation artifacts; external dependencies still come from the package index.
+Installation checks explicitly select the locally built wheel. The same-version file from PyPI cannot replace that validation artifact; external dependencies still come from the package index.
 
 Build and validate from the repository root:
 
 ```shell
 python -m pip install "pip>=23" build "setuptools>=77" "setuptools-scm>=8,<10" wheel twine
-python .github/scripts/build_distributions.py
+python -m build
 python .github/scripts/check_distributions.py --editable
 python -m twine check --strict dist/*
 ```
 
-The build script fixes the version, then creates each target's wheel and sdist in `dist/`. Do not mix other versions' artifacts. `--outdir` selects another destination; `--wheel` builds only wheels.
+The build creates one wheel and one sdist for `JustStream` in `dist/`. Do not mix other versions' artifacts. `--wheel` builds only the wheel.
 
 Build dependencies are declared in `setup.py` using `setup_requires`. With no `pyproject.toml`, pip uses its default setuptools backend.
 
-Each sdist includes `.distribution-target`, allowing `python -m build` to recreate the same distribution without an environment variable. Changing the sdist target is rejected.
-
-`TargetEggInfo.find_sources()` in `setup.py` maintains the additional build sources included in sdists. No separate `MANIFEST.in` is used. This source list does not install helper scripts into regular wheels.
-
-Sdists contain the shared source tree. Unselected implementation files are excluded from built wheels and installed files; the source archives themselves are not split into isolated source trees.
-
-CI checks build and installation isolation on supported Python versions. Releases verify names, versions and build numbers, then publish implementations before the core. PyPI publishing permissions and the token must cover all three names. Local builds do not publish anything.
+CI checks the build and installation on supported Python versions. Releases verify the name, version and build number, then publish the single `JustStream` distribution. Local builds do not publish anything.
 
 ### Public version decision
 

@@ -23,8 +23,8 @@ python -m pip install "JustStream[RabbitMQ]"
 python -m pip install "JustStream[Redis]"
 ```
 
-To install both adapters, use `python -m pip install "JustStream[RabbitMQ,Redis]"`. To install the core without broker clients, use `python -m pip install JustStream`.
-The base installation also excludes broker implementation code. Each extra installs a separate, same-version implementation distribution and its client.
+To install both adapters, use `python -m pip install "JustStream[RabbitMQ,Redis]"`. To install without broker clients, use `python -m pip install JustStream`.
+The single `JustStream` distribution always includes the core and all broker implementation sources. Each extra only installs that broker's client dependency.
 To modify the source code, see [installation isolation, development and distribution](./docs/Packaging.en.md).
 
 ## Quick start

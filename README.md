@@ -23,8 +23,8 @@ python -m pip install "JustStream[RabbitMQ]"
 python -m pip install "JustStream[Redis]"
 ```
 
-두 어댑터가 모두 필요하면 `python -m pip install "JustStream[RabbitMQ,Redis]"`를 사용하세요. 브로커 클라이언트 없이 코어만 설치하려면 `python -m pip install JustStream`을 사용합니다.
-기본 설치에는 브로커 구현체 코드도 포함되지 않습니다. 각 extra는 동일 버전의 별도 구현체 패키지와 클라이언트를 설치합니다.
+두 어댑터가 모두 필요하면 `python -m pip install "JustStream[RabbitMQ,Redis]"`를 사용하세요. 브로커 클라이언트 없이 설치하려면 `python -m pip install JustStream`을 사용합니다.
+`JustStream` 하나의 배포물에 코어와 모든 브로커 구현체 소스가 포함됩니다. extra는 해당 브로커 클라이언트 의존성만 추가로 설치합니다.
 소스 코드를 수정하고 싶다면 [설치 격리와 개발·배포](./docs/Packaging.md)를 참고하세요.
 
 ## 빠르게 시작하기
