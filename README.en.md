@@ -67,6 +67,14 @@ if __name__ == '__main__':
 
 The Worker waits for tasks on the `example.add` queue. See the [detailed guide](./docs/README.en.md) for publishing tasks, declaring queues, RPC, and broker-specific configuration.
 
+## Performance comparison with FastStream
+
+Measured on RabbitMQ and Redis under identical conditions (100,000 messages, no-op handler, 10 workers and prefetch). Under these conditions JustStream consumed about 1.9 times faster than FastStream on RabbitMQ and about 2.5 times faster on Redis, with peak memory of about 44 MB versus 60 MB.
+
+![JustStream and FastStream comparison chart](./docs/Benchmarks.svg)
+
+See [FastStream performance comparison](./docs/Benchmarks.en.md) for the environment, conditions, caveats, and how to reproduce the results.
+
 ## Documentation and releases
 
 - [Detailed guide (English)](./docs/README.en.md)

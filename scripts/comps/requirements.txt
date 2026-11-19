@@ -1,0 +1,1 @@
+faststream[rabbit,redis]>=0.7,<0.8

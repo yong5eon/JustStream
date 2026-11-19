@@ -37,3 +37,4 @@ Messages published by a producer pass through the broker to a Worker Consumer, a
 - [Operations and monitoring](./Operations.en.md): Inspector, logging, and operational broker considerations
 - [RabbitMQ](./RabbitMQ.en.md): queues, exchanges, streams, RPC, connection timers, and RabbitMQ workers
 - [Redis Streams](./Redis.en.md): messages, consumer groups, acknowledgements, and Redis workers
+- [FastStream performance comparison](./Benchmarks.en.md): RabbitMQ and Redis publish/consume throughput and resource usage, and how to reproduce
