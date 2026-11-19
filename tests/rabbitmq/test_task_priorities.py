@@ -9,7 +9,7 @@ from JustStream.Broker.Implements.RabbitMQ import (
 	Connection,
 	Subscription,
 )
-from JustStream.Worker import (
+from JustStream import (
 	Run,
 	declare,
 	request,

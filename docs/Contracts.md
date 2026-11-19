@@ -102,7 +102,7 @@ print(non_negative_integer('10'))
 
 ```python
 from JustStream.Broker.Implements.RabbitMQ import Reject, Subscription
-from JustStream.Worker import Run, Specification
+from JustStream import Run, Specification
 
 
 class Add(

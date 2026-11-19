@@ -17,7 +17,7 @@ from JustStream.Broker.Implements.RabbitMQ import (
 	Reject,
 	Subscription as RabbitSubscription,
 )
-from JustStream.Worker import (
+from JustStream import (
 	ThreadPool,
 	Worker,
 	emit,

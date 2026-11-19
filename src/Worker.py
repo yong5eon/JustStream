@@ -21,16 +21,16 @@ from typing import (
 	Dict,
 )
 
-from ..Broker import (
+from .Broker import (
 	Connection,
 	GetConsumer,
 	Consumer,
 	Recoverable,
 	EventHandler,
 )
-from ..Broker.Event import Event
+from .Broker.Event import Event
 from .Message import task_parameters
-from ..Inspector import Inspector
+from .Inspector import Inspector
 from .Pool import (
 	Pool,
 	PoolFull,

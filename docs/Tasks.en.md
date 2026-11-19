@@ -14,7 +14,7 @@ Task APIs, delivery policies, pools, and lifecycle hooks.
 | `emit(body, task=..., broker=..., retry=None, interval=1)` | Publish a one-way message to a task | Caller connects and closes |
 | `request(body, task=..., broker=..., timeout=5, retry=None, interval=1)` | Request a task result synchronously | Caller connects and closes; RabbitMQ only |
 
-Import these functions from `JustStream.Worker`. They do not connect or close
+Import these functions from `JustStream`. They do not connect or close
 the supplied connection. Neither `emit()` nor `request()` declares destinations.
 Call `declare()` in the receiving Worker's setup or a separate provisioning step.
 Reuse a connection for multiple publications on its owning thread.
@@ -60,7 +60,7 @@ There is no separate `priority` setting on `Run`.
 
 ```python
 from JustStream.Broker.Implements.RabbitMQ import Subscription
-from JustStream.Worker import (
+from JustStream import (
   Run,
   declare,
   request,
@@ -192,7 +192,7 @@ RabbitMQ stream reads are ACKed automatically when iteration advances.
 | `ThreadPool(4)` | I/O-bound tasks | Synchronize state shared across execution threads |
 | `ProcessPool(4)` | CPU-bound tasks | Classes, inputs, results, and hooks must be picklable |
 
-Import both pools from `JustStream.Worker`. Without an explicit size, they use
+Import both pools from `JustStream`. Without an explicit size, they use
 the CPU count. Capacity includes submitted, unfinished tasks; there is no
 unbounded waiting queue. A full pool causes the Worker to NACK for redelivery.
 RabbitMQ's per-task `Subscription.qos` limits unacknowledged deliveries, not pool size.

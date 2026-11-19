@@ -12,7 +12,7 @@ from JustStream.Broker.Implements.RabbitMQ import (
 	Connection,
 	Configuration,
 )
-from JustStream.Worker import request
+from JustStream import request
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@ from JustStream.Broker.Implements.RabbitMQ import (
 	Consumer,
 	Subscription,
 )
-from JustStream.Worker import (
+from JustStream import (
 	Run,
 	declare,
 )

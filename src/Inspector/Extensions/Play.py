@@ -22,7 +22,7 @@ from ...Broker.Connection import (
 	Requestable,
 )
 from ...Broker.Errors import RemoteError
-from ...Worker.Message import (
+from ...Message import (
 	message_body,
 	request,
 	emit,

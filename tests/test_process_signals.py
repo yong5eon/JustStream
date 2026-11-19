@@ -25,7 +25,7 @@ from unittest import (
 	skipUnless,
 )
 
-from JustStream.Worker import (
+from JustStream import (
 	PoolCleanup,
 	ProcessPool,
 	Run,

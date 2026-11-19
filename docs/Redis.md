@@ -116,7 +116,7 @@ from JustStream.Broker.Implements.Redis import (
   Reject,
   Subscription,
 )
-from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(

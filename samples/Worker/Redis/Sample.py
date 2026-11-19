@@ -25,7 +25,7 @@ from JustStream.Inspector.Extensions import (
 	Play,
 	Status,
 )
-from JustStream.Worker import (
+from JustStream import (
 	declare,
 	emit,
 	Run,

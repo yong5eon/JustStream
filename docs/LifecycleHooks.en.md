@@ -6,7 +6,7 @@ JustStream hooks provide initialization, completion, error observation, and clea
 
 ## Hook types and contracts
 
-All hook interfaces are available from `JustStream.Worker`. Each hook option accepts one callable or an ordered sequence of callables.
+All hook interfaces are available from `JustStream`. Each hook option accepts one callable or an ordered sequence of callables.
 
 | Scope | Hook | Invocation | Arguments |
 | --- | --- | --- | --- |
@@ -31,7 +31,7 @@ from JustStream.Broker.Implements.RabbitMQ import (
   Reject,
   Subscription,
 )
-from JustStream.Worker import (
+from JustStream import (
   Context,
   PoolCleanup,
   PoolSetup,

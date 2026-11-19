@@ -19,7 +19,7 @@ from JustStream.Broker.Implements.Redis import (
 	Reject,
 	Subscription,
 )
-from JustStream.Worker import (
+from JustStream import (
 	ProcessPool,
 	Run,
 	ThreadPool,

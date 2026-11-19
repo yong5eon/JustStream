@@ -24,7 +24,7 @@ The following worker listens to a local RabbitMQ server at `127.0.0.1:5672`. The
 from signal import SIGINT, signal
 
 from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection, Reject, Subscription
-from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(

@@ -35,7 +35,7 @@ python -m pip install "JustStream[Redis]"
 from signal import SIGINT, signal
 
 from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection, Reject, Subscription
-from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(

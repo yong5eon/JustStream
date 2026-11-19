@@ -16,7 +16,7 @@ from JustStream.Inspector.Extensions import (
 	Ping,
 	Status,
 )
-from JustStream.Worker import (
+from JustStream import (
 	Run,
 	ThreadPool,
 	Worker,

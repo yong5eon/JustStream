@@ -11,7 +11,7 @@ from typing import (
 	Union,
 )
 
-from ..Broker.Connection import (
+from .Broker.Connection import (
 	Connection,
 	Declarable,
 	Emittable,

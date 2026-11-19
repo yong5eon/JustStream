@@ -108,7 +108,7 @@ before `run()`, and the return value before completion hooks.
 
 ```python
 from JustStream.Broker.Implements.RabbitMQ import Reject, Subscription
-from JustStream.Worker import Run, Specification
+from JustStream import Run, Specification
 
 
 class Add(

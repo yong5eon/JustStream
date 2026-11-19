@@ -48,7 +48,7 @@ from JustStream.Broker.Implements.RabbitMQ import (
 	Connection,
 	Consumer,
 )
-from JustStream.Worker import (
+from JustStream import (
 	Pool,
 	PoolCleanup,
 	PoolSetup,
@@ -57,7 +57,7 @@ from JustStream.Worker import (
 	ThreadPool,
 	Worker,
 )
-from JustStream.Worker.Executor import Executor
+from JustStream.Executor import Executor
 from tests._support import (
 	call_with_invalid_input,
 	require_instance,
@@ -205,7 +205,7 @@ class RecoveryTests(TestCase):
 		return worker
 
 	def run_worker(self, worker):
-		with patch.object(import_module('JustStream.Worker.Worker'), 'startup'):
+		with patch.object(import_module('JustStream.Worker'), 'startup'):
 			worker.run()
 
 	def test_first_attempt_is_immediate_and_recovery_resets_budget(self):

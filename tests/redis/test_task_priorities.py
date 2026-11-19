@@ -8,7 +8,7 @@ from JustStream.Broker.Implements.Redis import (
 	Configuration,
 	Connection,
 )
-from JustStream.Worker import (
+from JustStream import (
 	Run,
 	declare,
 	emit,

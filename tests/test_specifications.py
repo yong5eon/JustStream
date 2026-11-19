@@ -48,7 +48,7 @@ from JustStream.Validator.Patterns.Object import (
 	IsMappingOf,
 	IsRequiredIn,
 )
-from JustStream.Worker import (
+from JustStream import (
 	ProcessPool,
 	Run,
 	Specification,

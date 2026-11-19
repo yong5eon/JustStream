@@ -9,7 +9,7 @@ RabbitMQ 연결, 큐·Exchange, Worker와 RPC 사용법입니다.
 Worker는 RabbitMQ 소비 연결·채널 장애 후 같은 프로세스 안에서 실행기와 연결을 복구합니다. 별도 supervisor는 필요하지 않습니다. 다음은 이미 구성한 `broker`와 JustStream `ThreadPool` 또는 `ProcessPool`인 `pool`을 사용하는 생성자 설정 발췌입니다.
 
 ```python
-from JustStream.Worker import Worker
+from JustStream import Worker
 
 
 worker = Worker(
@@ -247,7 +247,7 @@ from JustStream.Broker.Implements.RabbitMQ import (
   Reject,
   Subscription,
 )
-from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(
@@ -361,7 +361,7 @@ Mapping으로도 지정할 수 있습니다. 생략 또는 `None`이면 해당 �
 
 ### 워커 작업 우선순위
 
-작업을 발행할 때는 `JustStream.Worker.emit` 또는
+작업을 발행할 때는 `JustStream.emit` 또는
 `connection.emit(body, parameters)`을 사용합니다. 기존 작업 발행 이름 `send`는
 `emit`입니다.
 큐·Exchange·Stream의 저수준 `send()`와 RPC `call()`은 변경하지 않습니다.

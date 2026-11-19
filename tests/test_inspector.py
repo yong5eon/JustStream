@@ -28,7 +28,7 @@ from JustStream.Inspector.Extensions import (
 	Metrics,
 	Ping,
 )
-from JustStream.Worker import (
+from JustStream import (
 	PoolFull,
 	Run,
 	ThreadPool,
