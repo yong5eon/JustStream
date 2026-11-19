@@ -27,7 +27,7 @@ from .Extension import Extension
 from .Response import Response
 
 if TYPE_CHECKING:
-	from ..Worker.Worker import Worker
+	from ..Worker import Worker
 
 __all__ = (
 	'Inspector',

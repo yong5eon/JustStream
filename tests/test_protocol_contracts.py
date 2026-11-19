@@ -70,11 +70,11 @@ from JustStream.Broker.Implements.Redis.Serializer import (
 	JavaScriptObjectNotationDecoder,
 	JavaScriptObjectNotationEncoder,
 )
-from JustStream.Worker import (
+from JustStream import (
 	Run,
 	Worker,
 )
-from JustStream.Worker import __all__ as worker_exports
+from JustStream import __all__ as worker_exports
 from tests._support import call_with_invalid_input
 
 

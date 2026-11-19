@@ -23,7 +23,7 @@ from JustStream.Broker import (
 )
 from JustStream.Broker.Event import EventHandler
 from JustStream.Broker.Event import EventErrorPolicy
-from JustStream.Worker import (
+from JustStream import (
 	Run,
 	ThreadPool,
 	Worker,

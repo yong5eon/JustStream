@@ -56,7 +56,7 @@ from JustStream.Descriptor.DataObject import (
 from JustStream.Descriptor.Value import (
 	Type,
 )
-from JustStream.Worker import Specification
+from JustStream import Specification
 
 
 @dataclass

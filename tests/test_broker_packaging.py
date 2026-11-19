@@ -121,7 +121,7 @@ class BrokerPackagingTests(TestCase):
 		for blocked, modules in (
 			(
 				['pika', 'redis'],
-				['JustStream', 'JustStream.Broker', 'JustStream.Worker', 'JustStream.Inspector'],
+				['JustStream', 'JustStream.Broker', 'JustStream.Inspector'],
 			),
 			(
 				['redis'],

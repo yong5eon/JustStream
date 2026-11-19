@@ -45,7 +45,7 @@ or a secret store in production.
 
 ```python
 from JustStream.Broker.Implements.RabbitMQ import Reject, Subscription
-from JustStream.Worker import Run
+from JustStream import Run
 
 
 class Add(
@@ -82,7 +82,7 @@ a consumer raises `TypeError`; no worker-specific connection type is needed.
 from signal import SIGINT, signal
 
 from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
-from JustStream.Worker import ThreadPool, Worker, WorkerSetup, declare
+from JustStream import ThreadPool, Worker, WorkerSetup, declare
 from tasks import Add
 
 
@@ -146,7 +146,7 @@ Run this in another terminal while the Worker is running.
 
 ```python
 from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
-from JustStream.Worker import emit, request
+from JustStream import emit, request
 from tasks import Add
 
 

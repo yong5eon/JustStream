@@ -1,6 +1,6 @@
 from threading import Event
 
-from JustStream.Worker import (
+from JustStream import (
 	Run,
 	Worker,
 	WorkerSetup,

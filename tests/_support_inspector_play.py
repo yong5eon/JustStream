@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from JustStream.Inspector import Inspector
 from JustStream.Inspector.Extensions import Play
-from JustStream.Worker import (
+from JustStream import (
 	Run,
 	Specification,
 	ThreadPool,

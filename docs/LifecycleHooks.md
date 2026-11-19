@@ -6,7 +6,7 @@ JustStream의 훅은 작업, 실행 풀의 각 스레드·프로세스, Worker�
 
 ## 훅의 종류와 계약
 
-모든 훅은 `JustStream.Worker`에서 가져올 수 있습니다. 각 훅 옵션에는 단일 호출 가능 객체 또는 순서가 있는 시퀀스를 전달할 수 있습니다.
+모든 훅은 `JustStream`에서 가져올 수 있습니다. 각 훅 옵션에는 단일 호출 가능 객체 또는 순서가 있는 시퀀스를 전달할 수 있습니다.
 
 | 범위 | 훅 | 호출 시점 | 전달 인자 |
 | --- | --- | --- | --- |
@@ -31,7 +31,7 @@ from JustStream.Broker.Implements.RabbitMQ import (
   Reject,
   Subscription,
 )
-from JustStream.Worker import (
+from JustStream import (
   Context,
   PoolCleanup,
   PoolSetup,

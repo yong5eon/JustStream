@@ -16,8 +16,8 @@ from typing import (
 	Union,
 )
 
-from ..Broker.Event import EventErrorPolicy
-from ..Broker.Priority import validate_priority
+from .Broker.Event import EventErrorPolicy
+from .Broker.Priority import validate_priority
 from .Specification import Specification
 
 __all__ = (

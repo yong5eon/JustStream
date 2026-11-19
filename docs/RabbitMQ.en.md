@@ -9,7 +9,7 @@ Connections, queues, exchanges, workers, and RPC.
 After a RabbitMQ consumption connection or channel failure, the Worker recovers its executor and connection in the same process, without a separate supervisor. This constructor excerpt uses an already configured `broker` and a JustStream `ThreadPool` or `ProcessPool` named `pool`; it is not a standalone program.
 
 ```python
-from JustStream.Worker import Worker
+from JustStream import Worker
 
 
 worker = Worker(
@@ -259,7 +259,7 @@ from JustStream.Broker.Implements.RabbitMQ import (
   Reject,
   Subscription,
 )
-from JustStream.Worker import Run, ThreadPool, Worker, WorkerSetup, declare
+from JustStream import Run, ThreadPool, Worker, WorkerSetup, declare
 
 
 class Add(
@@ -374,7 +374,7 @@ Checks run approximately once per minute, so do not use this as a precise execut
 
 ### Worker task priorities
 
-Publish tasks with `JustStream.Worker.emit` or `connection.emit(body, parameters)`.
+Publish tasks with `JustStream.emit` or `connection.emit(body, parameters)`.
 The task publication API is `emit`. Low-level `send()` and RPC `call()` on queues, exchanges,
 and streams remain unchanged.
 

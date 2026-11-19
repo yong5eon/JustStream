@@ -7,7 +7,7 @@ from unittest import (
 )
 from unittest.mock import Mock
 
-from JustStream.Worker import (
+from JustStream import (
 	Pool,
 	ProcessPool,
 	Run,

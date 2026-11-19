@@ -44,7 +44,7 @@ python -m pip install "JustStream[RabbitMQ,Redis]"
 
 ```python
 from JustStream.Broker.Implements.RabbitMQ import Reject, Subscription
-from JustStream.Worker import Run
+from JustStream import Run
 
 
 class Add(
@@ -81,7 +81,7 @@ class Add(
 from signal import SIGINT, signal
 
 from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
-from JustStream.Worker import ThreadPool, Worker, WorkerSetup, declare
+from JustStream import ThreadPool, Worker, WorkerSetup, declare
 from tasks import Add
 
 
@@ -144,7 +144,7 @@ Worker가 실행 중인 상태에서 다른 터미널에서 실행하세요.
 
 ```python
 from JustStream.Broker.Implements.RabbitMQ import Configuration, Connection
-from JustStream.Worker import emit, request
+from JustStream import emit, request
 from tasks import Add
 
 

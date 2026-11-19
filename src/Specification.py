@@ -8,12 +8,12 @@ from typing import (
 	Optional,
 )
 
-from ..Descriptor import (
+from .Descriptor import (
 	DumpSchema,
 	Schema,
 	ToSchema,
 )
-from ..Descriptor.Value import (
+from .Descriptor.Value import (
 	Condition,
 	Descriptor,
 )

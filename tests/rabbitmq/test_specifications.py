@@ -10,7 +10,7 @@ from unittest import (
 from uuid import uuid4
 
 from JustStream.Broker import RemoteError
-from JustStream.Worker import (
+from JustStream import (
 	ThreadPool,
 	Worker,
 	WorkerSetup,

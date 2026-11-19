@@ -17,11 +17,11 @@ from JustStream.Broker.Implements.Redis import (
 	Connection as RedisConnection,
 	Subscription as RedisSubscription,
 )
-from JustStream.Worker import (
+from JustStream import (
 	Run,
 	Worker,
 )
-from JustStream.Worker.Startup import (
+from JustStream.Startup import (
 	LOGO,
 	startup,
 )
