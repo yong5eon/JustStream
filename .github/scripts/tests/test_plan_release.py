@@ -30,19 +30,24 @@ def issue(
 
 
 class ClassifyIssueTests(TestCase):
-	def test_type_decides_and_ignores_labels(self) -> None:
+	def test_type_and_labels_are_combined(self) -> None:
 		cases: list[tuple[dict[str, Any], str]] = [
 			(issue(1, 'Feature'), 'minor'),
 			(issue(2, 'Bug'), 'patch'),
-			(issue(3, 'Task', 'feature'), 'keep'),
-			(issue(4, 'Epic', 'feature'), 'keep'),
+			(issue(3, 'Fix'), 'patch'),
+			(issue(4, 'Task', 'feature'), 'minor'),
+			(issue(5, 'Task', 'bug'), 'patch'),
+			(issue(6, 'Bug', 'feature'), 'minor'),
+			(issue(7, 'Feature', 'fix'), 'minor'),
+			(issue(8, 'Task', 'task'), 'keep'),
+			(issue(9, 'Epic'), 'keep'),
 		]
 		for item, expected in cases:
 			with self.subTest(number=item['number']):
 				self.assertEqual(classify_issue(item), expected)
 		return
 
-	def test_labels_decide_only_without_type(self) -> None:
+	def test_labels_classify_without_type(self) -> None:
 		cases: list[tuple[dict[str, Any], str]] = [
 			(issue(1, None, 'feature'), 'minor'),
 			(issue(2, None, 'bug'), 'patch'),
@@ -148,7 +153,7 @@ class PlanReleaseTests(TestCase):
 		return
 
 	def test_pr_without_bump_issue_keeps_version(self) -> None:
-		for linked in ([], [issue(1, 'Task', 'feature')]):
+		for linked in ([], [issue(1, 'Task', 'task')]):
 			with self.subTest(linked=len(linked)):
 				self.check_output.reset_mock()
 				result: dict[str, str] = self.plan(
