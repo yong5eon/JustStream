@@ -67,6 +67,14 @@ if __name__ == '__main__':
 
 Worker는 `example.add` 큐에서 작업을 기다립니다. 작업 발행, 큐 선언, RPC 및 브로커별 설정은 [상세 매뉴얼](./docs/README.md)에서 확인하세요.
 
+## FastStream과 성능 비교
+
+RabbitMQ와 Redis에서 같은 조건(메시지 100,000건, no-op 핸들러, 워커 수·prefetch 10)으로 측정한 결과입니다. 이 조건에서 JustStream의 소비 처리량은 FastStream의 약 1.9배(RabbitMQ)와 약 2.5배(Redis)였고, 최대 메모리는 약 44MB 대 60MB였습니다.
+
+![JustStream과 FastStream 비교 그래프](./docs/Benchmarks.svg)
+
+측정 환경과 조건, 해석할 때 주의할 점, 재현 방법은 [FastStream 성능 비교](./docs/Benchmarks.md)에서 확인하세요.
+
 ## 문서와 릴리즈
 
 - [상세 매뉴얼 (한국어)](./docs/README.md)

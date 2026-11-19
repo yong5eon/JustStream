@@ -37,3 +37,4 @@ Producer가 발행한 메시지는 브로커를 거쳐 Worker의 Consumer로 전
 - [운영과 모니터링](./Operations.md): Inspector, 로깅, 브로커 선택과 운영 고려사항
 - [RabbitMQ](./RabbitMQ.md): 큐, Exchange, 스트림, RPC, 연결 타이머와 RabbitMQ Worker
 - [Redis Streams](./Redis.md): 메시지, consumer group, ACK와 Redis Worker
+- [FastStream 성능 비교](./Benchmarks.md): RabbitMQ·Redis 발행·소비 처리량과 자원 사용량 비교, 재현 방법
