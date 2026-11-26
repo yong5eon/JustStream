@@ -1,6 +1,5 @@
 from collections.abc import Mapping
 from copy import deepcopy
-from dataclasses import is_dataclass
 from re import fullmatch
 from typing import (
 	Any,
@@ -9,9 +8,8 @@ from typing import (
 )
 
 from .Descriptor import (
-	DumpSchema,
 	Schema,
-	ToSchema,
+	schema_to_dict,
 )
 from .Descriptor.Value import (
 	Condition,
@@ -41,11 +39,6 @@ class Specification:
 			raise ValueError('Specification format must be a concrete media type')
 		if validator is not None and not callable(validator):
 			raise TypeError('A Specification validator must be callable')
-		if isinstance(
-			schema,
-			type,
-		) and is_dataclass(schema):
-			schema = ToSchema(schema)
 		if schema is not None and not isinstance(
 			schema,
 			(
@@ -55,7 +48,7 @@ class Specification:
 				Mapping,
 			),
 		):
-			raise TypeError('A Descriptor schema, schema mapping or dataclass type is required')
+			raise TypeError('A Descriptor schema or schema mapping is required')
 		self.schema = schema
 		self.validator = validator
 		self.example = example
@@ -69,7 +62,7 @@ class Specification:
 		return self.validator(value) if self.validator is not None else value
 
 	def document(self) -> dict:
-		payload = {} if self.schema is None else DumpSchema(
+		payload = {} if self.schema is None else schema_to_dict(
 			self.schema if isinstance(
 				self.schema,
 				Schema,

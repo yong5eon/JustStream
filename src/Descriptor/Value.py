@@ -13,12 +13,8 @@ from typing import (
 	Dict,
 	Union,
 	Iterable,
-	Tuple,
 )
-from abc import (
-	ABCMeta,
-	ABC,
-)
+from abc import ABC
 
 __all__ = (
 	'Type',
@@ -27,8 +23,6 @@ __all__ = (
 	'Schema',
 	'OneOf',
 	'AllOf',
-	'TypeMapper',
-	'TypeEncoder',
 )
 
 
@@ -168,21 +162,3 @@ class OneOf(Condition):
 
 
 class AllOf(Condition): pass
-
-
-class TypeMapper(metaclass=ABCMeta):
-	"""사용자 타입을 Value 파생 클래스와 생성 인자로 변환한다."""
-
-	def __call__(
-		self,
-		o: type,
-	) -> Tuple[type[Value], Dict[str, Any]]:
-		raise NotImplementedError('{} must be implemented __call__'.format(self.__class__.__name__))
-
-
-class TypeEncoder(metaclass=ABCMeta):
-	def __call__(
-		self,
-		o: Any,
-	) -> Any:
-		raise NotImplementedError('{} must be implemented __call__'.format(self.__class__.__name__))

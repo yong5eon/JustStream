@@ -2,16 +2,11 @@ from collections.abc import (
 	Mapping,
 	Sequence,
 )
-from dataclasses import is_dataclass
 from json import (
 	dumps,
 	loads,
 )
-from typing import (
-	Any,
-	Optional,
-	Type,
-)
+from typing import Any
 
 from .Value import (
 	Value,
@@ -19,8 +14,6 @@ from .Value import (
 	Schema,
 	OneOf,
 	AllOf,
-	TypeMapper,
-	TypeEncoder,
 )
 from .Types import (
 	Boolean,
@@ -36,10 +29,6 @@ from .Types import (
 	Object,
 	Properties,
 )
-from .DataObject import (
-	DataObjectToSchema,
-	DataObjectToObject,
-)
 
 __all__ = (
 	'Value',
@@ -47,8 +36,6 @@ __all__ = (
 	'Schema',
 	'OneOf',
 	'AllOf',
-	'TypeMapper',
-	'TypeEncoder',
 	'Boolean',
 	'IntegerFormat',
 	'Integer',
@@ -61,9 +48,7 @@ __all__ = (
 	'Array',
 	'Object',
 	'Properties',
-	'ToSchema',
-	'DumpSchema',
-	'ToObject',
+	'schema_to_dict',
 )
 
 
@@ -124,7 +109,7 @@ def schema_value(
 	raise TypeError('Unsupported schema value: ' + type(value).__name__)
 
 
-def DumpSchema(
+def schema_to_dict(
 	o: Schema,
 ) -> dict:
 	if not isinstance(
@@ -142,31 +127,3 @@ def DumpSchema(
 		result,
 		allow_nan=False,
 	))
-
-
-def ToSchema(
-	o: Type[object],
-	description: Optional[str] = None,
-	typedef: Optional[TypeMapper] = None,
-) -> Schema:
-	if not isinstance(
-		o,
-		type,
-	) or not is_dataclass(o):
-		raise TypeError('A dataclass type is required')
-	return DataObjectToSchema(mapper=typedef)(
-		o,
-		description,
-	)
-
-
-def ToObject(
-	o: object,
-	typeenc: Optional[TypeEncoder] = None,
-) -> dict:
-	if isinstance(
-		o,
-		type,
-	) or not is_dataclass(o):
-		raise TypeError('A dataclass instance is required')
-	return DataObjectToObject(encoder=typeenc)(o)

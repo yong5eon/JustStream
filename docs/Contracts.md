@@ -13,7 +13,7 @@
 ### 1. Descriptor로 스키마 작성
 
 ```python
-from JustStream.Descriptor import DumpSchema, Integer, Object, Properties, Schema
+from JustStream.Descriptor import schema_to_dict, Integer, Object, Properties, Schema
 
 
 request_schema = Object(
@@ -25,7 +25,7 @@ request_schema = Object(
 )
 response_schema = Integer('Sum')
 
-print(DumpSchema(Schema(
+print(schema_to_dict(Schema(
   'AddRequest',
   request_schema,
 )))
@@ -34,7 +34,7 @@ print(DumpSchema(Schema(
 `Object`는 객체, `Properties`는 필드, `Integer`는 정수를 설명합니다.
 `Integer` 등의 필드는 기본적으로 필수이며 `required=False`로 선택 필드를 표시할 수 있습니다.
 `String`, `Number`, `Boolean`, `Array` 등으로 다른 타입과 중첩 구조도 표현합니다.
-`DumpSchema()`에는 `Schema`로 감싼 값을 전달하여 일반 JSON Schema 딕셔너리를 얻습니다.
+`schema_to_dict()`에는 `Schema`로 감싼 값을 전달하여 일반 JSON Schema 딕셔너리를 얻습니다.
 
 이 스키마는 `a`, `b`를 정수 필수 필드로 문서화하지만 **메시지를 자동 검증하지는 않습니다.**
 스키마의 필수 여부·기본값·범위를 실제 실행에서도 적용하려면 대응하는 검증 규칙이 필요합니다.
@@ -130,7 +130,7 @@ class Add(
     return a + b
 ```
 
-- `schema`는 문서용입니다. JSON Schema 매핑, Descriptor 값·조건, dataclass 타입 등을 받지만,
+- `schema`는 문서용입니다. JSON Schema 매핑, Descriptor 값·조건 등을 받지만,
   그 자체로 런타임 검증이나 모델 생성을 수행하지 않습니다.
 - `validator`는 호출 가능한 검증·변환 함수이며 반환한 값을 실제 실행에 사용합니다.
   요청 검증 결과도 문자열 키를 가진 매핑이어야 합니다.
