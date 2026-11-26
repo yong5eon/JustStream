@@ -13,7 +13,7 @@ Place the following examples in the same file, in order.
 ### 1. Describe a schema with Descriptor
 
 ```python
-from JustStream.Descriptor import DumpSchema, Integer, Object, Properties, Schema
+from JustStream.Descriptor import schema_to_dict, Integer, Object, Properties, Schema
 
 
 request_schema = Object(
@@ -25,7 +25,7 @@ request_schema = Object(
 )
 response_schema = Integer('Sum')
 
-print(DumpSchema(Schema(
+print(schema_to_dict(Schema(
   'AddRequest',
   request_schema,
 )))
@@ -35,7 +35,7 @@ print(DumpSchema(Schema(
 Fields such as `Integer` are required by default; use `required=False` to mark
 an optional field. Use `String`, `Number`, `Boolean`, and `Array` for other types
 and nested structures. Wrap a value in `Schema` before passing it to
-`DumpSchema()` to obtain a plain JSON Schema dictionary.
+`schema_to_dict()` to obtain a plain JSON Schema dictionary.
 
 This documents `a` and `b` as required integers but **does not validate messages
 automatically**. Required fields, defaults, and ranges need corresponding
@@ -136,8 +136,7 @@ class Add(
     return a + b
 ```
 
-- `schema` is documentation metadata: it accepts JSON Schema mappings, Descriptor values/conditions,
-  and dataclass types, but does not itself validate values or instantiate models.
+- `schema` is documentation metadata: it accepts JSON Schema mappings and Descriptor values/conditions, but does not itself validate values or instantiate models.
 - `validator` is a callable validation/transformation function. Its returned value is used for execution.
   A request validator must still return a mapping with string keys.
 - Plain JSON Schema dictionaries and custom validation functions can also be passed as `schema` and `validator`.

@@ -1,7 +1,3 @@
-from dataclasses import (
-	dataclass,
-	field,
-)
 from http.client import HTTPConnection
 from json import loads
 from pickle import (
@@ -9,9 +5,6 @@ from pickle import (
 	loads as unpickle,
 )
 from sys import modules
-from typing import (
-	List,
-)
 from unittest import (
 	TestCase,
 	main,
@@ -21,15 +14,13 @@ from unittest.mock import Mock
 from JustStream.Descriptor import (
 	AllOf,
 	Array,
-	DumpSchema,
 	Integer,
 	Object,
 	OneOf,
 	Properties,
 	Schema,
 	String,
-	ToObject,
-	ToSchema,
+	schema_to_dict,
 )
 from JustStream.Inspector import Inspector
 from JustStream.Inspector.Extensions import Specifications
@@ -60,22 +51,6 @@ from tests._support import (
 	require_instance,
 	require_value,
 )
-
-
-@dataclass
-class Operands:
-	a: int
-	b: int = 2
-
-
-@dataclass
-class Batch:
-	items: List[int] = field(default_factory=list)
-
-
-@dataclass
-class ForwardOperands:
-	value: 'Operands'
 
 
 class Add(
@@ -154,14 +129,16 @@ class ContractTests(TestCase):
 			Add()(a='3'),
 			5,
 		)
-		self.assertEqual(
-			ToObject(Operands(3)),
-			{
-				'a': 3,
-				'b': 2,
-			},
-		)
-		schema = DumpSchema(ToSchema(Operands))
+		schema = schema_to_dict(Schema(
+			'Operands',
+			Object(properties=Properties(
+				a=Integer(),
+				b=Integer(
+					required=False,
+					default=2,
+				),
+			)),
+		))
 		self.assertEqual(
 			schema['required'],
 			['a'],
@@ -170,23 +147,12 @@ class ContractTests(TestCase):
 			schema['properties']['b']['default'],
 			2,
 		)
-		self.assertFalse(any('DataModel' in name for name in modules if name.startswith('JustStream.Descriptor')))
-		batch_schema = DumpSchema(ToSchema(Batch))
-		self.assertEqual(
-			batch_schema['properties']['items']['items'],
-			{'type': 'integer'},
-		)
-		self.assertEqual(
-			batch_schema['properties']['items']['default'],
-			[],
-		)
-		self.assertEqual(
-			DumpSchema(ToSchema(ForwardOperands))['properties']['value']['type'],
-			'object',
-		)
+		self.assertFalse(any('DataObject' in name for name in modules if name.startswith('JustStream.Descriptor')))
+		with self.assertRaises(TypeError):
+			Specification(schema=object)
 
 	def test_schema_conditions_bounds_defaults_and_unsupported_values(self):
-		schema = DumpSchema(Schema(
+		schema = schema_to_dict(Schema(
 			'Value',
 			AllOf(
 				Integer(min=0),
@@ -198,7 +164,7 @@ class ContractTests(TestCase):
 			['allOf'],
 		)
 		self.assertEqual(
-			DumpSchema(Schema(
+			schema_to_dict(Schema(
 				'Text',
 				String(
 					min=2,
@@ -212,7 +178,7 @@ class ContractTests(TestCase):
 			},
 		)
 		self.assertEqual(
-			DumpSchema(Schema(
+			schema_to_dict(Schema(
 				'Items',
 				Array(default=[]),
 			))['default'],
@@ -220,7 +186,7 @@ class ContractTests(TestCase):
 		)
 		self.assertIn(
 			'oneOf',
-			DumpSchema(Schema(
+			schema_to_dict(Schema(
 				'Choice',
 				OneOf(
 					Integer(),
@@ -229,7 +195,7 @@ class ContractTests(TestCase):
 			)),
 		)
 		with self.assertRaises(TypeError):
-			DumpSchema(call_with_invalid_input(
+			schema_to_dict(call_with_invalid_input(
 				Schema,
 				'Unsupported',
 				object(),
@@ -365,10 +331,6 @@ class ContractTests(TestCase):
 			'mapping',
 		):
 			NonMapping()(a=1)
-		self.assertEqual(
-			Specification(schema=Operands).document()['payload']['type'],
-			'object',
-		)
 		self.assertEqual(
 			Specification(example=None).document()['examples'],
 			[{'payload': None}],
