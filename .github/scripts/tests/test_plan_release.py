@@ -30,31 +30,28 @@ def issue(
 
 
 class ClassifyIssueTests(TestCase):
-	def test_type_and_labels_are_combined(self) -> None:
+	def test_type_decides_case_insensitively(self) -> None:
 		cases: list[tuple[dict[str, Any], str]] = [
 			(issue(1, 'Feature'), 'minor'),
-			(issue(2, 'Bug'), 'patch'),
-			(issue(3, 'Fix'), 'patch'),
-			(issue(4, 'Task', 'feature'), 'minor'),
-			(issue(5, 'Task', 'bug'), 'patch'),
-			(issue(6, 'Bug', 'feature'), 'minor'),
-			(issue(7, 'Feature', 'fix'), 'minor'),
-			(issue(8, 'Task', 'task'), 'keep'),
-			(issue(9, 'Epic'), 'keep'),
+			(issue(2, 'feature'), 'minor'),
+			(issue(3, 'Bug'), 'patch'),
+			(issue(4, 'FIX'), 'patch'),
+			(issue(5, 'Task'), 'keep'),
+			(issue(6, 'Epic'), 'keep'),
 		]
 		for item, expected in cases:
 			with self.subTest(number=item['number']):
 				self.assertEqual(classify_issue(item), expected)
 		return
 
-	def test_labels_classify_without_type(self) -> None:
+	def test_labels_never_affect_the_result(self) -> None:
 		cases: list[tuple[dict[str, Any], str]] = [
-			(issue(1, None, 'feature'), 'minor'),
-			(issue(2, None, 'bug'), 'patch'),
-			(issue(3, None, 'fix'), 'patch'),
-			(issue(4, None, 'task'), 'keep'),
-			(issue(5, None), 'keep'),
-			(issue(6, None, 'fix', 'feature'), 'minor'),
+			(issue(1, None, 'feature'), 'keep'),
+			(issue(2, None, 'bug', 'fix'), 'keep'),
+			(issue(3, 'Task', 'feature'), 'keep'),
+			(issue(4, 'Bug', 'feature'), 'patch'),
+			(issue(5, 'Feature', 'bug'), 'minor'),
+			(issue(6, 'Task', 'task'), 'keep'),
 		]
 		for item, expected in cases:
 			with self.subTest(number=item['number']):
@@ -147,7 +144,7 @@ class PlanReleaseTests(TestCase):
 		result: dict[str, str] = self.plan(
 			'v0.1.29\n',
 			self.pulls(self.pull()),
-			self.graphql(issue(1, 'Task'), issue(2, None, 'bug'), issue(3, 'Feature')),
+			self.graphql(issue(1, 'Task'), issue(2, 'Bug'), issue(3, 'Feature')),
 		)
 		self.assertEqual(result['version'], '0.2.0')
 		return

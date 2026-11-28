@@ -23,7 +23,6 @@ query($owner: String!, $name: String!, $number: Int!) {
 				nodes {
 					number
 					issueType { name }
-					labels(first: 100) { nodes { name } }
 				}
 			}
 		}
@@ -49,19 +48,15 @@ def classify_issue(
 	issue: dict[str, Any],
 ) -> str:
 	"""
-	Classify one issue by its type and labels together, using the highest increase found.
+	Classify one issue by its type only; labels never affect the version.
 	"""
 	issue_type: Optional[dict[str, str]] = issue['issueType']
-	names: list[str] = [label['name'] for label in issue['labels']['nodes']]
-	if issue_type is not None:
-		names.append(issue_type['name'])
-	return higher([
-		NAME_BUMPS.get(
-			name.lower(),
-			'keep',
-		)
-		for name in names
-	])
+	if issue_type is None:
+		return 'keep'
+	return NAME_BUMPS.get(
+		issue_type['name'].lower(),
+		'keep',
+	)
 
 
 def latest_release(

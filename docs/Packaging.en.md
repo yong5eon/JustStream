@@ -66,15 +66,15 @@ CI checks the build and installation on supported Python versions. Releases veri
 
 ### Public version decision
 
-A change that reaches `master` and passes verification is published to PyPI, whether it is a direct push or a merged PR. The public version (`MAJOR.MINOR.PATCH`) comes from the issues linked to the merged PR (those GitHub recognizes, such as `Closes #N`), not from changed file paths. The issue type and labels are checked together, case-insensitively.
+A change that reaches `master` and passes verification is published to PyPI, whether it is a direct push or a merged PR. The public version (`MAJOR.MINOR.PATCH`) comes from the issues linked to the merged PR (those GitHub recognizes, such as `Closes #N`), not from changed file paths. Only the issue type is checked, case-insensitively; labels are not used.
 
-| Issue type or label | Public version |
+| Issue type | Public version |
 | --- | --- |
 | `feature` | Increase `MINOR` and reset `PATCH` to 0 (`0.1.29` → `0.2.0`) |
 | `bug`, `fix` | Increase `PATCH` |
 | Any other value, or none | Keep |
 
-- If the type or any label is `feature`, `MINOR` increases; otherwise, if any is `bug` or `fix`, `PATCH` increases. For example, a `Task` issue with a `feature` label increases `MINOR`.
+- An issue with no type, or a type not listed above, keeps the version regardless of its labels. For example, a `Task` issue keeps the version even with a `feature` label.
 - With several linked issues, each is evaluated and the highest increase (`MINOR` > `PATCH` > keep) is used.
 - A PR without a linked issue and a direct push to `master` keep the public version.
 - The base version is the highest `MAJOR.MINOR.PATCH` tag contained in the commit before the push. After `MINOR` increases, later `PATCH` releases continue in the new `MAJOR.MINOR` series (`0.2.0` → `0.2.1`). `MAJOR` changes are not handled.
@@ -82,7 +82,7 @@ A change that reaches `master` and passes verification is published to PyPI, whe
 
 ### Tags for release notes
 
-When the public version increases (a merged PR linked to an issue whose type or label is `feature`, `bug` or `fix`), the message of an annotated tag named `changes/<commit SHA>` becomes the GitHub Release body. The `changes/` prefix is required because GitHub rejects tag names that consist only of a full SHA. The release fails if the tag is missing, is a lightweight tag, or has an empty message. Releases that keep the public version, including direct pushes, reuse the existing release notes and need no tag.
+When the public version increases (a merged PR linked to an issue whose type is `feature`, `bug` or `fix`), the message of an annotated tag named `changes/<commit SHA>` becomes the GitHub Release body. The `changes/` prefix is required because GitHub rejects tag names that consist only of a full SHA. The release fails if the tag is missing, is a lightweight tag, or has an empty message. Releases that keep the public version, including direct pushes, reuse the existing release notes and need no tag.
 
 - A merged PR reads the `changes/<SHA>` tag of the PR's last commit (`head.sha`), not the merge result, from the PR's source repository (original or fork).
 
